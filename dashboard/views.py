@@ -67,14 +67,14 @@ def upload_pdf(request):
                         destination.write(chunk)
 
                 # Process the PDF
-                processed_path = reverse_pdf_pages(temp_path, profile)
+                processed_path, page_count = reverse_pdf_pages(temp_path, profile)
 
                 # Create processing history record
                 history = ProcessingHistory.objects.create(
                     original_filename=pdf_filename,
                     processed_filename=os.path.basename(processed_path),
                     file_size=pdf_file.size,
-                    page_count=0,  # Will be updated by processing
+                    page_count=page_count,
                     status='completed',
                     printer_profile=profile,
                 )
@@ -162,6 +162,15 @@ def processing_history(request):
     return render(request, 'dashboard/history.html', {'jobs': jobs})
 
 
+@require_POST
+def delete_processing_history(request, pk):
+    """Delete a processing history record."""
+    job = get_object_or_404(ProcessingHistory, pk=pk)
+    job.delete()
+    messages.success(request, "Processing history record deleted successfully.")
+    return redirect('processing_history')
+
+
 def system_settings(request):
     """Manage system settings."""
     settings_list = SystemSettings.objects.all()
@@ -179,21 +188,6 @@ def system_settings(request):
         'settings': settings_list,
         'form': form
     })
-
-
-def logs_view(request):
-    """View system logs."""
-    log_file = os.path.join(settings.LOGS_FOLDER, 'printfix.log')
-    logs = []
-
-    if os.path.exists(log_file):
-        try:
-            with open(log_file, 'r') as f:
-                logs = f.readlines()[-100:]  # Last 100 lines
-        except Exception as e:
-            logs = [f"Error reading logs: {str(e)}"]
-
-    return render(request, 'dashboard/logs.html', {'logs': logs})
 
 
 # API Views
@@ -251,13 +245,14 @@ def api_process_job(request):
             return JsonResponse({'error': 'Missing filename or filepath'}, status=400)
 
         # Process the PDF
-        processed_path = reverse_pdf_pages(filepath)
+        processed_path, page_count = reverse_pdf_pages(filepath)
 
         # Create history record
         history = ProcessingHistory.objects.create(
             original_filename=filename,
             processed_filename=os.path.basename(processed_path),
             file_size=os.path.getsize(filepath),
+            page_count=page_count,
             status='completed',
         )
 

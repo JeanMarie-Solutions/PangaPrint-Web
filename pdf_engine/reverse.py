@@ -31,16 +31,18 @@ def reverse_pdf_pages(input_path, profile=None):
         if profile:
             should_reverse = profile.reverse_pages
 
-        if not should_reverse:
-            # If no reversal needed, return original path
-            return input_path
-
         # Read the PDF
         reader = PdfReader(input_path)
+        page_count = len(reader.pages)
+
+        if not should_reverse:
+            # If no reversal needed, return original path and page count
+            return input_path, page_count
+
         writer = PdfWriter()
 
         # Reverse the pages
-        for page_num in reversed(range(len(reader.pages))):
+        for page_num in reversed(range(page_count)):
             writer.add_page(reader.pages[page_num])
 
         # Generate output path
@@ -57,7 +59,7 @@ def reverse_pdf_pages(input_path, profile=None):
             writer.write(output_file)
 
         logger.info(f"PDF reversed: {input_path} -> {output_path}")
-        return output_path
+        return output_path, page_count
 
     except Exception as e:
         logger.error(f"Failed to reverse PDF {input_path}: {str(e)}")

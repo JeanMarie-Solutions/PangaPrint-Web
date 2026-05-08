@@ -1,84 +1,72 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Profile - PrintFix Assistant{% endblock %}
+{% block title %}Edit Printer Profile - PrintFix Assistant{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="mb-0">
-                    <i class="bi bi-pencil me-2"></i>
-                    Edit Printer Profile: {{ profile.name }}
-                </h4>
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Printer Profile</h4>
+                    <small class="text-muted">Update the printer profile settings below.</small>
+                </div>
+                <a href="{% url 'printer_profiles' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Back
+                </a>
             </div>
             <div class="card-body">
                 <form method="post">
                     {% csrf_token %}
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">Profile Name</label>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.name.id_for_label }}">Profile Name</label>
                             {{ form.name }}
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.is_default.id_for_label }}" class="form-label">Default Profile</label>
-                            <div class="form-check">
+                        <div class="col-md-6">
+                            <label class="form-label" for="{{ form.is_default.id_for_label }}">Default Profile</label>
+                            <div class="form-check mt-2">
                                 {{ form.is_default }}
-                                <label class="form-check-label" for="{{ form.is_default.id_for_label }}">
-                                    Set as default profile
-                                </label>
+                                <label class="form-check-label" for="{{ form.is_default.id_for_label }}">Use as default</label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
                         {{ form.description }}
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
+                    <div class="row g-3">
+                        <div class="col-md-4">
                             <div class="form-check">
                                 {{ form.reverse_pages }}
-                                <label class="form-check-label" for="{{ form.reverse_pages.id_for_label }}">
-                                    Reverse Page Order
-                                </label>
+                                <label class="form-check-label" for="{{ form.reverse_pages.id_for_label }}">Reverse Page Order</label>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-check">
                                 {{ form.duplex_mode }}
-                                <label class="form-check-label" for="{{ form.duplex_mode.id_for_label }}">
-                                    Duplex Mode
-                                </label>
+                                <label class="form-check-label" for="{{ form.duplex_mode.id_for_label }}">Duplex Mode</label>
                             </div>
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-4">
                             <div class="form-check">
                                 {{ form.auto_print }}
-                                <label class="form-check-label" for="{{ form.auto_print.id_for_label }}">
-                                    Auto Launch Print
-                                </label>
+                                <label class="form-check-label" for="{{ form.auto_print.id_for_label }}">Auto Print</label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.watch_folder.id_for_label }}" class="form-label">Watch Folder (Optional)</label>
+                    <div class="mb-3 mt-3">
+                        <label class="form-label" for="{{ form.watch_folder.id_for_label }}">Watch Folder</label>
                         {{ form.watch_folder }}
-                        <div class="form-text">Leave empty to use global watch folder</div>
                     </div>
 
-                    <div class="d-flex gap-2">
+                    <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle me-2"></i>
-                            Save Changes
+                            <i class="bi bi-save me-1"></i>Save Changes
                         </button>
-                        <a href="{% url 'printer_profiles' %}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-2"></i>
-                            Back to Profiles
-                        </a>
                     </div>
                 </form>
             </div>

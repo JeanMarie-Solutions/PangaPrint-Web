@@ -9,8 +9,8 @@ urlpatterns = [
     path('profiles/<int:pk>/delete/', views.delete_printer_profile, name='delete_printer_profile'),
     path('history/', views.processing_history, name='processing_history'),
     path('history/<int:pk>/download/', views.download_processed, name='download_processed'),
+    path('history/<int:pk>/delete/', views.delete_processing_history, name='delete_processing_history'),
     path('settings/', views.system_settings, name='system_settings'),
-    path('logs/', views.logs_view, name='logs_view'),
 
     # API endpoints
     path('api/status/', views.api_status, name='api_status'),

@@ -3,56 +3,45 @@
 {% block title %}Processing History - PrintFix Assistant{% endblock %}
 
 {% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-clock-history me-2"></i>Processing History</h2>
+            <p class="text-muted mb-0">Complete list of processed PDF jobs, including status and download links.</p>
+        </div>
+        <a href="{% url 'upload_pdf' %}" class="btn btn-primary">
+            <i class="bi bi-upload me-2"></i>Upload PDF
+        </a>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="bi bi-clock-history me-2"></i>
-                Processing History
-            </h2>
-            <a href="{% url 'dashboard_home' %}" class="btn btn-outline-primary">
-                <i class="bi bi-house-door me-2"></i>
-                Back to Dashboard
-            </a>
-        </div>
-
-        {% if jobs %}
-            <div class="card">
-                <div class="card-body">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                {% if jobs %}
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Filename</th>
+                                    <th>Original File</th>
                                     <th>Status</th>
                                     <th>Pages</th>
-                                    <th>File Size</th>
                                     <th>Profile</th>
-                                    <th>Created</th>
-                                    <th>Completed</th>
-                                    <th>Actions</th>
+                                    <th>Processed</th>
+                                    <th>Download</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for job in jobs %}
                                     <tr>
+                                        <td>{{ job.original_filename }}</td>
                                         <td>
-                                            <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
-                                            {{ job.original_filename }}
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-{% if job.status == 'completed' %}success{% elif job.status == 'failed' %}danger{% elif job.status == 'processing' %}warning{% else %}secondary{% endif %}">
+                                            <span class="badge bg-{% if job.status == 'completed' %}success{% elif job.status == 'failed' %}danger{% else %}warning{% endif %}">
                                                 {{ job.get_status_display }}
                                             </span>
                                         </td>
-                                        <td>{{ job.page_count|default:"-" }}</td>
-                                        <td>
-                                            {% if job.file_size %}
-                                                {{ job.file_size|filesizeformat }}
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </td>
+                                        <td>{{ job.page_count }}</td>
                                         <td>
                                             {% if job.printer_profile %}
                                                 {{ job.printer_profile.name }}
@@ -60,59 +49,35 @@
                                                 Default
                                             {% endif %}
                                         </td>
-                                        <td>{{ job.created_at|date:"M d, H:i:s" }}</td>
+                                        <td>{{ job.created_at|date:"M d, H:i" }}</td>
                                         <td>
-                                            {% if job.completed_at %}
-                                                {{ job.completed_at|date:"M d, H:i:s" }}
-                                            {% else %}
-                                                -
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if job.status == 'completed' and job.processed_filename %}
-                                                <button class="btn btn-sm btn-outline-success" title="Download processed PDF">
-                                                    <i class="bi bi-download"></i>
-                                                </button>
-                                            {% endif %}
-                                            {% if job.error_message %}
-                                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip"
-                                                        title="{{ job.error_message }}">
-                                                    <i class="bi bi-info-circle"></i>
-                                                </button>
-                                            {% endif %}
+                                            <div class="d-flex gap-2">
+                                                {% if job.status == 'completed' and job.processed_filename %}
+                                                    <a href="{% url 'download_processed' job.id %}" class="btn btn-sm btn-outline-success">
+                                                        <i class="bi bi-download"></i>
+                                                    </a>
+                                                {% endif %}
+                                                <form method="post" action="{% url 'delete_processing_history' job.id %}" onsubmit="return confirm('Delete this history record?');" class="mb-0">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                {% else %}
+                    <div class="p-4 text-center text-muted">
+                        <i class="bi bi-inbox fs-1 mb-3"></i>
+                        <p class="mb-0">No jobs have been processed yet.</p>
+                    </div>
+                {% endif %}
             </div>
-
-            <!-- Pagination would go here if needed -->
-        {% else %}
-            <div class="text-center py-5">
-                <i class="bi bi-clock-history fs-1 text-muted mb-3"></i>
-                <h4 class="text-muted">No Processing History</h4>
-                <p class="text-muted">Upload and process some PDFs to see history here.</p>
-                <a href="{% url 'upload_pdf' %}" class="btn btn-primary">
-                    <i class="bi bi-upload me-2"></i>
-                    Upload PDF
-                </a>
-            </div>
-        {% endif %}
+        </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-});
-</script>
 {% endblock %}

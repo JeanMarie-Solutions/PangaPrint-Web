@@ -50,7 +50,7 @@ class PDFHandler(FileSystemEventHandler):
 
         # Process the PDF
         try:
-            processed_path = reverse_pdf_pages(filepath)
+            processed_path, _ = reverse_pdf_pages(filepath)
             launch_pdf_print(processed_path)
             logger.info(f"Successfully processed: {filepath}")
         except Exception as e:
