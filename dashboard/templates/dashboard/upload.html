@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload PDF - PrintFix Assistant{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-upload me-2"></i>
+                    Upload PDF for Processing
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="uploadForm">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="{{ form.pdf_file.id_for_label }}" class="form-label">
+                            Select PDF File
+                        </label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="{{ form.pdf_file.id_for_label }}"
+                                   name="{{ form.pdf_file.name }}" accept=".pdf" required>
+                            <label class="input-group-text" for="{{ form.pdf_file.id_for_label }}">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                            </label>
+                        </div>
+                        {% if form.pdf_file.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.pdf_file.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Select a PDF file to process. The system will reverse page order and prepare for printing.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.printer_profile.id_for_label }}" class="form-label">
+                            Printer Profile (Optional)
+                        </label>
+                        {{ form.printer_profile }}
+                        {% if form.printer_profile.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.printer_profile.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            Select a printer profile to use specific processing settings. Leave empty for default.
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="bi bi-play-fill me-2"></i>
+                            Process PDF
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Drag and Drop Zone -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="text-center py-4" id="dropZone">
+                    <i class="bi bi-cloud-upload fs-1 text-muted mb-3"></i>
+                    <h5 class="text-muted">Drag & Drop PDF Here</h5>
+                    <p class="text-muted">Or click the file input above</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('{{ form.pdf_file.id_for_label }}');
+    const form = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.classList.add('bg-light', 'border-primary');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('bg-light', 'border-primary');
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0 && files[0].type === 'application/pdf') {
+            fileInput.files = files;
+            // Trigger change event
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+        } else {
+            alert('Please drop a PDF file only.');
+        }
+    }
+
+    // Form submission with loading state
+    form.addEventListener('submit', function(e) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Processing...';
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function(e) {
+        if (this.files.length > 0) {
+            const fileName = this.files[0].name;
+            dropZone.innerHTML = `
+                <i class="bi bi-file-earmark-pdf fs-1 text-success mb-3"></i>
+                <h5 class="text-success">${fileName}</h5>
+                <p class="text-muted">Ready to process</p>
+            `;
+        }
+    });
+});
+</script>
+{% endblock %}
