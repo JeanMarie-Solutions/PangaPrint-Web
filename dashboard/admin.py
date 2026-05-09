@@ -4,8 +4,8 @@ from .models import PrinterProfile, ProcessingHistory, SystemSettings, PrintJobL
 
 @admin.register(PrinterProfile)
 class PrinterProfileAdmin(admin.ModelAdmin):
-    list_display = ('name', 'reverse_pages', 'duplex_mode', 'auto_print', 'is_default', 'created_at')
-    list_filter = ('is_default', 'reverse_pages', 'duplex_mode', 'auto_print')
+    list_display = ('name', 'reverse_pages', 'auto_print', 'is_default', 'created_at')
+    list_filter = ('is_default', 'reverse_pages', 'auto_print')
     search_fields = ('name', 'description')
     readonly_fields = ('created_at', 'updated_at')
 

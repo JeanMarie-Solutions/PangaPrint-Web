@@ -9,88 +9,210 @@
     <p class="pf-eyebrow">Jobs</p>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
       <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg, #1b5e9e 0%, #4da6d8 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
-          <g transform="translate(50, 50)">
-            <rect x="-20" y="-5" width="40" height="30" fill="#fff" opacity="0.9" transform="skewY(-5)"/>
-            <rect x="-18" y="-12" width="36" height="28" fill="#fff" opacity="0.85" transform="skewY(-3)"/>
-            <rect x="-16" y="-18" width="32" height="26" fill="#fff" opacity="0.8" transform="skewY(-1)"/>
-            <rect x="-14" y="-23" width="28" height="24" fill="#fff" opacity="0.6"/>
-          </g>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
         </svg>
       </div>
-      <h1 class="pf-title" style="margin-bottom:0">Upload PDF</h1>
+      <h1 class="pf-title" style="margin-bottom:0">Upload PDFs</h1>
     </div>
-    <p class="pf-subtitle">Process a PDF file with a printer profile</p>
+    <p class="pf-subtitle">Process one or more PDF files with a printer profile</p>
   </div>
 </div>
 
-<div style="max-width:640px">
+<div style="max-width:1100px;width:100%;display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start">
 
-  <!-- Drop zone -->
-  <div class="pf-card" style="margin-bottom:16px">
-    <div id="dropZone" style="padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:background var(--t),border-color var(--t);border-radius:var(--radius);border:2px dashed var(--accent-2)">
-      <div id="dropIcon" style="width:52px;height:52px;border-radius:14px;background:var(--surface-3);border:2px dashed var(--accent-bright);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+  <div>
+
+    <!-- Drop zone -->
+    <div class="pf-card" style="margin-bottom:16px">
+      <div id="dropZone" style="padding:2.5rem 2rem;text-align:center;cursor:pointer;transition:background var(--t),border-color var(--t);border-radius:var(--radius);border:2px dashed var(--accent-2)">
+        <div id="dropIcon" style="width:52px;height:52px;border-radius:14px;background:var(--surface-3);border:2px dashed var(--accent-bright);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent-bright)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <p id="dropTitle" style="font-family:var(--ff-head);font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:5px">Drag &amp; drop your PDFs here</p>
+        <p id="dropSub" style="font-size:12px;color:var(--ink-ghost)">or use the file picker below</p>
       </div>
-      <p id="dropTitle" style="font-family:var(--ff-head);font-size:15px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:5px">Drag &amp; drop your PDF here</p>
-      <p id="dropSub" style="font-size:12px;color:var(--ink-ghost)">or use the file picker below</p>
     </div>
-  </div>
 
-  <!-- Form card -->
-  <div class="pf-card">
-    <div class="pf-card-head">
-      <p class="pf-card-title">Processing Options</p>
-    </div>
-    <div class="pf-card-body">
-      <form method="post" enctype="multipart/form-data" id="uploadForm">
-        {% csrf_token %}
+    <!-- Form card -->
+    <div class="pf-card">
+      <div class="pf-card-head">
+        <p class="pf-card-title">Processing Options</p>
+      </div>
+      <div class="pf-card-body">
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+          {% csrf_token %}
 
-        <div class="pf-field">
-          <label class="pf-label" for="{{ form.pdf_file.id_for_label }}">PDF file</label>
-          <div style="display:flex;gap:8px;align-items:stretch">
-            <input type="file"
-                   id="{{ form.pdf_file.id_for_label }}"
-                   name="{{ form.pdf_file.name }}"
-                   accept=".pdf"
-                   required
-                   style="flex:1;font-family:var(--ff-body);font-size:13px;color:var(--ink);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:var(--radius-sm);padding:9px 12px;outline:none;cursor:pointer;transition:border-color var(--t)">
+          <div class="pf-field">
+            <label class="pf-label" for="id_pdf_files">PDF files</label>
+            <div style="display:flex;gap:8px;align-items:stretch">
+              <input type="file"
+                     id="id_pdf_files"
+                     name="pdf_files"
+                     accept=".pdf"
+                     multiple
+                     required
+                     style="flex:1;font-family:var(--ff-body);font-size:13px;color:var(--ink);background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:var(--radius-sm);padding:9px 12px;outline:none;cursor:pointer;transition:border-color var(--t)">
+            </div>
+            <p class="pf-hint">Select one or more .pdf files (maximum 500 MB each)</p>
           </div>
-          {% if form.pdf_file.errors %}
-            {% for error in form.pdf_file.errors %}
-              <p class="pf-error">{{ error }}</p>
-            {% endfor %}
+
+          <div class="pf-field" style="margin-bottom:2rem">
+            <label class="pf-label" for="{{ form.printer_profile.id_for_label }}">Printer profile <span style="color:var(--ink-ghost);font-weight:400">(optional)</span></label>
+            {{ form.printer_profile }}
+            {% if form.printer_profile.errors %}
+              {% for error in form.printer_profile.errors %}
+                <p class="pf-error">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+            <p class="pf-hint">Leave empty to use default processing settings</p>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end">
+            <button type="submit" class="pf-btn pf-btn-dark" id="submitBtn" style="min-width:140px;justify-content:center">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Process PDFs
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Sidebar with tips and recent profiles -->
+  <div>
+    <!-- Quick tips card -->
+    <div class="pf-card" style="margin-bottom:16px">
+      <div class="pf-card-head">
+        <p class="pf-card-title">Quick Tips</p>
+      </div>
+      <div class="pf-card-body" style="padding:1rem">
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:12px;color:var(--ink-soft)">
+          <div style="display:flex;gap:8px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:6px;background:var(--accent-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+            <span>Maximum file size: 500 MB</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:6px;background:var(--accent-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span>PDF format will be preserved</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-start">
+            <div style="width:20px;height:20px;border-radius:6px;background:var(--accent-2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span>Processing time: 30-60 seconds</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active profiles card -->
+    <div class="pf-card">
+      <div class="pf-card-head" style="padding:1rem 1.5rem">
+        <p class="pf-card-title">Available Profiles</p>
+      </div>
+      <div class="pf-card-body" style="padding:1rem 1.5rem;max-height:320px;overflow-y:auto">
+        <div id="profilesList">
+          {% if profiles %}
+            <div style="display:flex;flex-direction:column;gap:12px">
+              {% for profile in profiles %}
+                <div style="padding:12px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-2);display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                  <div style="min-width:0">
+                    <p style="margin:0;font-size:13px;font-weight:700;color:var(--ink);">{{ profile.name }}</p>
+                    <p style="margin:.35rem 0 0;font-size:12px;color:var(--ink-soft);line-height:1.5;">{{ profile.description|default:'No description' }}</p>
+                  </div>
+                  {% if profile.is_default %}
+                    <span class="pf-badge pf-badge-accent" style="white-space:nowrap">Default</span>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div style="padding:1rem 0;text-align:center;color:var(--ink-ghost);font-size:13px">
+              No available profiles yet.
+            </div>
           {% endif %}
-          <p class="pf-hint">Only .pdf files are accepted</p>
         </div>
-
-        <div class="pf-field" style="margin-bottom:2rem">
-          <label class="pf-label" for="{{ form.printer_profile.id_for_label }}">Printer profile <span style="color:var(--ink-ghost);font-weight:400">(optional)</span></label>
-          {{ form.printer_profile }}
-          {% if form.printer_profile.errors %}
-            {% for error in form.printer_profile.errors %}
-              <p class="pf-error">{{ error }}</p>
-            {% endfor %}
-          {% endif %}
-          <p class="pf-hint">Leave empty to use default processing settings</p>
-        </div>
-
-        <div style="display:flex;justify-content:flex-end">
-          <button type="submit" class="pf-btn pf-btn-dark" id="submitBtn" style="min-width:140px;justify-content:center">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Process PDF
-          </button>
-        </div>
-
-      </form>
+      </div>
     </div>
   </div>
 
+</div>
+
+<div class="pf-modal-overlay" id="postProcessModal">
+  <div class="pf-modal">
+    <div class="pf-modal-header">
+      <div class="pf-modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 9V4h12v5"/>
+          <path d="M6 9h12v9a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9z"/>
+          <path d="M10 13h4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="pf-modal-title">Document processed</div>
+        <div class="pf-modal-subtitle">Choose whether to print it now or save it for later.</div>
+      </div>
+    </div>
+    <div class="pf-modal-body">
+      <div class="pf-modal-body-text">Your PDF is ready.</div>
+      <div class="pf-modal-filename" id="postProcessFileName">Processed document available.</div>
+    </div>
+    <div class="pf-modal-footer">
+      <button class="pf-modal-btn pf-modal-btn-cancel" type="button" id="postProcessClose">Later</button>
+      <a class="pf-modal-btn pf-modal-btn-accent" id="postProcessDownload" target="_blank">Download</a>
+      <a class="pf-modal-btn pf-modal-btn-delete" id="postProcessPrint" target="_blank">Print</a>
+    </div>
+  </div>
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
+<style>
+  .pf-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 35, 50, 0.45);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  .pf-modal-overlay.active { display: flex; }
+  .pf-modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    width: min(420px, 92vw);
+    box-shadow: 0 26px 70px rgba(27, 94, 158, 0.16);
+  }
+  .pf-modal-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; }
+  .pf-modal-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: var(--accent-2); display:flex;align-items:center;justify-content:center;
+  }
+  .pf-modal-icon svg { width: 20px; height: 20px; stroke: var(--accent); stroke-width: 2; }
+  .pf-modal-title { font-family: var(--ff-head); font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 0.4rem; }
+  .pf-modal-subtitle { font-size: 13px; color: var(--ink-soft); line-height: 1.5; }
+  .pf-modal-body { margin-bottom: 1.5rem; padding: 1rem; background: var(--surface-2); border-radius: var(--radius-sm); border-left: 3px solid var(--accent); }
+  .pf-modal-body-text { font-size: 13px; color: var(--ink); font-weight: 500; }
+  .pf-modal-filename { margin-top: 0.5rem; font-size: 12px; color: var(--ink-soft); word-break: break-all; font-family: monospace; }
+  .pf-modal-footer { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+  .pf-modal-btn { display: inline-flex; align-items: center; justify-content: center; min-width: 100px; padding: 9px 16px; border-radius: var(--radius-pill); border: none; font-family: var(--ff-body); font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--t); text-decoration: none; }
+  .pf-modal-btn-cancel { background: var(--surface-3); color: var(--ink-soft); }
+  .pf-modal-btn-accent { background: var(--accent); color: #fff; }
+  .pf-modal-btn-delete { background: var(--danger); color: #fff; }
+  .pf-modal-btn-cancel:hover { color: var(--ink); }
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const dropZone   = document.getElementById('dropZone');
@@ -100,6 +222,15 @@ document.addEventListener('DOMContentLoaded', function () {
   const dropTitle  = document.getElementById('dropTitle');
   const dropSub    = document.getElementById('dropSub');
   const dropIcon   = document.getElementById('dropIcon');
+  const profilesList = document.getElementById('profilesList');
+  const profileApiUrl = '{% url "api_profiles" %}';
+  const downloadTemplate = '{% url "download_processed" 0 %}';
+  const printTemplate = '{% url "print_processed" 0 %}';
+  const postProcessModal = document.getElementById('postProcessModal');
+  const postProcessFileName = document.getElementById('postProcessFileName');
+  const postProcessPrint = document.getElementById('postProcessPrint');
+  const postProcessDownload = document.getElementById('postProcessDownload');
+  const postProcessClose = document.getElementById('postProcessClose');
 
   function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
   ['dragenter','dragover','dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, preventDefaults));
@@ -114,17 +245,23 @@ document.addEventListener('DOMContentLoaded', function () {
   }));
 
   dropZone.addEventListener('drop', function (e) {
-    const files = e.dataTransfer.files;
-    if (files.length && files[0].type === 'application/pdf') {
-      fileInput.files = files;
-      showReady(files[0].name);
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
+    if (files.length > 0) {
+      // Create a new DataTransfer to set multiple files
+      const dt = new DataTransfer();
+      files.forEach(file => dt.items.add(file));
+      fileInput.files = dt.files;
+      showReady(files.length === 1 ? files[0].name : `${files.length} files selected`);
     } else {
-      alert('Please drop a PDF file only.');
+      alert('Please drop PDF files only.');
     }
   });
 
   fileInput.addEventListener('change', function () {
-    if (this.files.length) showReady(this.files[0].name);
+    if (this.files.length) {
+      const fileNames = Array.from(this.files).map(f => f.name);
+      showReady(this.files.length === 1 ? fileNames[0] : `${this.files.length} files selected`);
+    }
   });
 
   function showReady(name) {
@@ -134,6 +271,95 @@ document.addEventListener('DOMContentLoaded', function () {
     dropTitle.style.color = 'var(--success)';
     dropSub.textContent = 'Ready to process';
   }
+
+  function getQueryParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
+  }
+
+  function buildUrl(template, jobId) {
+    return template.replace('/0/', '/' + jobId + '/');
+  }
+
+  function openPostProcessModal(jobId) {
+    const downloadUrl = buildUrl(downloadTemplate, jobId);
+    const printUrl = buildUrl(printTemplate, jobId);
+
+    postProcessDownload.href = downloadUrl;
+    postProcessPrint.href = printUrl;
+    postProcessFileName.textContent = 'The processed document is ready for print or download.';
+    postProcessModal.classList.add('active');
+  }
+
+  function closePostProcessModal() {
+    postProcessModal.classList.remove('active');
+  }
+
+  postProcessClose.addEventListener('click', closePostProcessModal);
+  postProcessDownload.addEventListener('click', closePostProcessModal);
+  postProcessPrint.addEventListener('click', closePostProcessModal);
+  postProcessModal.addEventListener('click', function (event) {
+    if (event.target === postProcessModal) closePostProcessModal();
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') closePostProcessModal();
+  });
+
+  function renderProfiles(profiles) {
+    if (!profilesList) return;
+    profilesList.innerHTML = '';
+
+    if (!profiles.length) {
+      profilesList.innerHTML = '<div style="padding:1rem 0;text-align:center;color:var(--ink-ghost);font-size:13px">No available profiles yet.</div>';
+      return;
+    }
+
+    profiles.forEach(profile => {
+      const row = document.createElement('div');
+      row.style.cssText = 'padding:12px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface-2);display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;';
+
+      const left = document.createElement('div');
+      left.style.minWidth = '0';
+
+      const title = document.createElement('p');
+      title.style.cssText = 'margin:0;font-size:13px;font-weight:700;color:var(--ink);';
+      title.textContent = profile.name;
+
+      const description = document.createElement('p');
+      description.style.cssText = 'margin:.35rem 0 0;font-size:12px;color:var(--ink-soft);line-height:1.5;';
+      description.textContent = profile.description || 'No description';
+
+      left.appendChild(title);
+      left.appendChild(description);
+      row.appendChild(left);
+
+      if (profile.is_default) {
+        const badge = document.createElement('span');
+        badge.className = 'pf-badge pf-badge-accent';
+        badge.style.whiteSpace = 'nowrap';
+        badge.textContent = 'Default';
+        row.appendChild(badge);
+      }
+
+      profilesList.appendChild(row);
+    });
+  }
+
+  function refreshProfiles() {
+    fetch(profileApiUrl)
+      .then(response => response.json())
+      .then(renderProfiles)
+      .catch(() => {});
+  }
+
+  const processedJobId = getQueryParam('processed_job');
+  if (processedJobId) {
+    openPostProcessModal(processedJobId);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  refreshProfiles();
+  setInterval(refreshProfiles, 15000);
 
   form.addEventListener('submit', function () {
     submitBtn.disabled = true;

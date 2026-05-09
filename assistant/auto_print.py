@@ -26,11 +26,6 @@ def auto_print_pdf(pdf_path, profile=None):
                 # PDF should already be reversed by pdf_engine
                 pass
 
-            # Launch print dialog or print silently
-            if profile.duplex_mode:
-                # Handle duplex printing
-                pass
-
             # For now, always show print dialog
             return launch_pdf_print(pdf_path)
         else:

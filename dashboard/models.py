@@ -7,7 +7,6 @@ class PrinterProfile(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
     reverse_pages = models.BooleanField(default=True, help_text="Reverse page order for correct stacking")
-    duplex_mode = models.BooleanField(default=False, help_text="Enable duplex printing")
     auto_print = models.BooleanField(default=True, help_text="Automatically launch print dialog")
     watch_folder = models.CharField(max_length=500, blank=True, help_text="Specific watch folder for this profile")
     is_default = models.BooleanField(default=False)

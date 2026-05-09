@@ -9,13 +9,9 @@
     <p class="pf-eyebrow">Jobs</p>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
       <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg, #1b5e9e 0%, #4da6d8 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
-          <g transform="translate(50, 50)">
-            <rect x="-20" y="-5" width="40" height="30" fill="#fff" opacity="0.9" transform="skewY(-5)"/>
-            <rect x="-18" y="-12" width="36" height="28" fill="#fff" opacity="0.85" transform="skewY(-3)"/>
-            <rect x="-16" y="-18" width="32" height="26" fill="#fff" opacity="0.8" transform="skewY(-1)"/>
-            <rect x="-14" y="-23" width="28" height="24" fill="#fff" opacity="0.6"/>
-          </g>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
         </svg>
       </div>
       <h1 class="pf-title" style="margin-bottom:0">Processing History</h1>
@@ -29,61 +25,137 @@
 </div>
 
 <div class="pf-card">
+  <style>
+    .history-card-toolbar {
+      padding: 1.5rem 1.5rem 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .history-card-toolbar .pf-btn {
+      min-width: 120px;
+    }
+    .history-card-toolbar .pf-action-group {
+      display: none;
+      gap: 8px;
+    }
+    .history-card-table-wrapper {
+      padding: 0 1.5rem 1.5rem;
+    }
+    .history-table-first-col {
+      width: 48px;
+      text-align: center;
+      padding: 12px 8px;
+      white-space: nowrap;
+    }
+    .history-table-first-col input {
+      margin: 0;
+    }
+    .pf-table th, .pf-table td {
+      padding: 16px 1.5rem;
+      vertical-align: middle;
+    }
+    .pf-table th:first-child, .pf-table td:first-child {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    .history-table-first-col input {
+      margin: 0;
+    }
+    .history-table-row:hover {
+      background: var(--surface-2);
+    }
+    .history-table-row.selected {
+      background: var(--accent-2);
+    }
+    .history-table-row.selected td {
+      color: var(--accent);
+    }
+  </style>
   {% if jobs %}
-    <div style="overflow-x:auto">
-      <table class="pf-table">
-        <thead>
-          <tr>
-            <th>File</th>
-            <th>Status</th>
-            <th>Pages</th>
-            <th>Profile</th>
-            <th>Processed</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for job in jobs %}
-          <tr>
-            <td>
-              <div class="pf-filename">
-                <div class="pf-ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-                {{ job.original_filename }}
-              </div>
-            </td>
-            <td>
-              <span class="pf-badge {% if job.status == 'completed' %}pf-badge-success{% elif job.status == 'failed' %}pf-badge-danger{% else %}pf-badge-warn{% endif %}">
-                {{ job.get_status_display }}
-              </span>
-            </td>
-            <td><span style="color:var(--ink-soft)">{{ job.page_count }}</span></td>
-            <td>
-              <span style="font-size:12px;color:var(--ink-soft)">
-                {% if job.printer_profile %}{{ job.printer_profile.name }}{% else %}Default{% endif %}
-              </span>
-            </td>
-            <td><span class="pf-muted">{{ job.created_at|date:"M d, H:i" }}</span></td>
-            <td>
-              <div style="display:flex;gap:6px;align-items:center">
-                {% if job.status == 'completed' and job.processed_filename %}
-                  <a href="{% url 'download_processed' job.id %}" class="pf-btn pf-btn-accent pf-btn-sm">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Download
-                  </a>
-                {% endif %}
-                <form method="post" action="{% url 'delete_processing_history' job.id %}" onsubmit="return confirm('Delete this record?')" style="margin:0">
-                  {% csrf_token %}
-                  <button type="submit" class="pf-btn pf-btn-danger pf-btn-sm" style="padding:6px 10px">
+    <form method="post" id="bulkForm" class="pf-form">
+      {% csrf_token %}
+      <div class="history-card-toolbar">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" onclick="selectAll()">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Select All
+          </button>
+          <div id="bulkActions" class="pf-action-group" style="display:none;gap:8px;">
+            <button type="submit" name="bulk_action" value="bulk_print" class="pf-btn pf-btn-accent pf-btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><rect x="6" y="9" width="12" height="11" rx="2"/><path d="M8 13h8M8 17h4"/></svg>
+              Bulk Print
+            </button>
+            <button type="button" class="pf-btn pf-btn-danger pf-btn-sm" onclick="openBulkDeleteModal()">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+              Bulk Delete
+            </button>
+          </div>
+        </div>
+        <div id="selectionSummary" style="color:var(--ink-soft);font-size:13px;display:none">0 selected</div>
+      </div>
+      <div class="pf-card-body" style="padding:0 1.5rem 1.5rem;">
+        <div style="overflow-x:auto">
+          <table class="pf-table">
+          <thead>
+            <tr>
+              <th class="history-table-first-col"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+              <th>File</th>
+              <th>Status</th>
+              <th>Pages</th>
+              <th>Profile</th>
+              <th>Processed</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in jobs %}
+            <tr class="history-table-row">
+              <td class="history-table-first-col"><input type="checkbox" name="selected_jobs" value="{{ job.id }}" class="job-checkbox" onchange="updateBulkSelection()"></td>
+              <td>
+                <div class="pf-filename">
+                  <div class="pf-ficon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                  {{ job.original_filename }}
+                </div>
+              </td>
+              <td>
+                <span class="pf-badge {% if job.status == 'completed' %}pf-badge-success{% elif job.status == 'failed' %}pf-badge-danger{% else %}pf-badge-warn{% endif %}">
+                  {{ job.get_status_display }}
+                </span>
+              </td>
+              <td><span style="color:var(--ink-soft)">{{ job.page_count }}</span></td>
+              <td>
+                <span style="font-size:12px;color:var(--ink-soft)">
+                  {% if job.printer_profile %}{{ job.printer_profile.name }}{% else %}Default{% endif %}
+                </span>
+              </td>
+              <td><span class="pf-muted">{{ job.created_at|date:"M d, H:i" }}</span></td>
+              <td>
+                <div style="display:flex;gap:6px;align-items:center">
+                  {% if job.status == 'completed' and job.processed_filename %}
+                    <a href="{% url 'download_processed' job.id %}" class="pf-btn pf-btn-accent pf-btn-sm">
+                      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Download
+                    </a>
+                    <a href="{% url 'print_processed' job.id %}" target="_blank" class="pf-btn pf-btn-ghost pf-btn-sm">
+                      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><rect x="6" y="9" width="12" height="11" rx="2"/><path d="M8 13h8M8 17h4"/></svg>
+                      Print
+                    </a>
+                  {% endif %}
+                  <button type="button" class="pf-btn pf-btn-danger pf-btn-sm" onclick="openDeleteModal(this)" data-job-id="{{ job.id }}" data-original-filename="{{ job.original_filename|escape }}" data-delete-url="{% url 'delete_processing_history' job.id %}" style="padding:6px 10px">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
                   </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
+    </form>
   {% else %}
     <div class="pf-empty">
       <div class="pf-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
@@ -93,4 +165,315 @@
   {% endif %}
 </div>
 
+<script>
+function selectAll() {
+  const checkboxes = document.querySelectorAll('.job-checkbox');
+  const selectAllCheckbox = document.getElementById('selectAll');
+  checkboxes.forEach(cb => cb.checked = true);
+  selectAllCheckbox.checked = true;
+  updateBulkSelection();
+}
+
+function toggleSelectAll() {
+  const checkboxes = document.querySelectorAll('.job-checkbox');
+  const selectAllCheckbox = document.getElementById('selectAll');
+  checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+  updateBulkSelection();
+}
+
+function updateBulkSelection() {
+  const checkboxes = document.querySelectorAll('.job-checkbox');
+  const selected = [...checkboxes].filter(cb => cb.checked);
+  const bulkActions = document.getElementById('bulkActions');
+  const selectionSummary = document.getElementById('selectionSummary');
+  const selectAllCheckbox = document.getElementById('selectAll');
+
+  if (selected.length > 0) {
+    bulkActions.style.display = 'flex';
+    selectionSummary.style.display = 'block';
+    selectionSummary.textContent = `${selected.length} selected`;
+  } else {
+    bulkActions.style.display = 'none';
+    selectionSummary.style.display = 'none';
+    selectionSummary.textContent = '0 selected';
+  }
+
+  selectAllCheckbox.checked = selected.length === checkboxes.length && checkboxes.length > 0;
+  selectAllCheckbox.indeterminate = selected.length > 0 && selected.length < checkboxes.length;
+
+  checkboxes.forEach(cb => {
+    const row = cb.closest('tr');
+    if (row) {
+      row.classList.toggle('selected', cb.checked);
+    }
+  });
+}
+
+function openBulkDeleteModal() {
+  const selected = [...document.querySelectorAll('.job-checkbox')].filter(cb => cb.checked);
+  if (!selected.length) {
+    return;
+  }
+  currentJobId = null;
+  currentDeleteUrl = null;
+  const summary = selected.length === 1 ? '1 record' : `${selected.length} records`;
+  document.getElementById('deleteFilename').textContent = `Bulk delete ${summary}`;
+  document.getElementById('deleteFullFilename').textContent = 'This action will remove selected processing history entries.';
+  document.getElementById('deleteModal').classList.add('active');
+}
+</script>
+
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .pf-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 35, 50, 0.5);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    animation: pf-fade-in 0.2s ease;
+  }
+  
+  .pf-modal-overlay.active {
+    display: flex;
+  }
+  
+  .pf-modal {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(27, 94, 158, 0.15);
+    animation: pf-slide-up 0.3s ease;
+  }
+  
+  .pf-modal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .pf-modal-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--danger-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  
+  .pf-modal-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--danger);
+    stroke-width: 2;
+  }
+  
+  .pf-modal-title {
+    font-family: var(--ff-head);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+  
+  .pf-modal-subtitle {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  
+  .pf-modal-body {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--surface-2);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--danger);
+  }
+  
+  .pf-modal-body-text {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  
+  .pf-modal-filename {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    word-break: break-all;
+    font-family: monospace;
+  }
+  
+  .pf-modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  
+  .pf-modal-btn {
+    padding: 9px 16px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all var(--t);
+    font-family: var(--ff-body);
+  }
+  
+  .pf-modal-btn-cancel {
+    background: var(--surface-3);
+    color: var(--ink-soft);
+  }
+  
+  .pf-modal-btn-cancel:hover {
+    background: var(--surface-3);
+    color: var(--ink);
+  }
+  
+  .pf-modal-btn-delete {
+    background: var(--danger);
+    color: #fff;
+  }
+  
+  .pf-modal-btn-delete:hover {
+    background: #a82f26;
+    opacity: 0.9;
+  }
+
+  .pf-table tbody tr:hover {
+    background: var(--surface-2);
+    cursor: pointer;
+  }
+
+  .pf-table tbody tr.selected {
+    background: var(--accent-2);
+  }
+
+  .pf-table tbody tr.selected td {
+    color: var(--accent);
+  }
+  
+  @keyframes pf-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes pf-slide-up {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+</style>
+
+<div class="pf-modal-overlay" id="deleteModal">
+  <div class="pf-modal">
+    <div class="pf-modal-header">
+      <div class="pf-modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6"/>
+          <path d="M14 11v6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="pf-modal-title">Delete Processing Record</div>
+        <div class="pf-modal-subtitle">This action cannot be undone</div>
+      </div>
+    </div>
+    
+    <div class="pf-modal-body">
+      <div class="pf-modal-body-text">Deleting: <span id="deleteFilename"></span></div>
+      <div class="pf-modal-filename" id="deleteFullFilename"></div>
+    </div>
+    
+    <div class="pf-modal-footer">
+      <button class="pf-modal-btn pf-modal-btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <button class="pf-modal-btn pf-modal-btn-delete" onclick="confirmDelete()">Delete Record</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentJobId = null;
+  let currentDeleteUrl = null;
+  
+  function openDeleteModal(button) {
+    currentJobId = button.dataset.jobId;
+    currentDeleteUrl = button.dataset.deleteUrl;
+    const filename = button.dataset.originalFilename || '';
+    const shortName = filename.length > 40 ? filename.substring(0, 37) + '...' : filename;
+    document.getElementById('deleteFilename').textContent = shortName;
+    document.getElementById('deleteFullFilename').textContent = filename;
+    document.getElementById('deleteModal').classList.add('active');
+  }
+  
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('active');
+    currentJobId = null;
+    currentDeleteUrl = null;
+  }
+  
+  function confirmDelete() {
+    if (currentDeleteUrl) {
+      const csrfTokenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+      const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+      const form = document.createElement('form');
+      form.method = 'post';
+      form.action = currentDeleteUrl;
+      form.style.display = 'none';
+
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = csrfToken;
+      form.appendChild(csrfInput);
+
+      document.body.appendChild(form);
+      form.submit();
+      return;
+    }
+
+    const bulkForm = document.getElementById('bulkForm');
+    if (!bulkForm) {
+      return;
+    }
+
+    let hiddenField = bulkForm.querySelector('input[name="bulk_action"]');
+    if (!hiddenField) {
+      hiddenField = document.createElement('input');
+      hiddenField.type = 'hidden';
+      hiddenField.name = 'bulk_action';
+      bulkForm.appendChild(hiddenField);
+    }
+    hiddenField.value = 'bulk_delete';
+    bulkForm.submit();
+  }
+
+  // Close modal when clicking on overlay
+  document.getElementById('deleteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeDeleteModal();
+    }
+  });
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeDeleteModal();
+    }
+  });
+</script>
 {% endblock %}

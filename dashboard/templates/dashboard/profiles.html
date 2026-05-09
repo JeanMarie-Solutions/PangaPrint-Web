@@ -9,13 +9,10 @@
     <p class="pf-eyebrow">Configuration</p>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
       <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg, #1b5e9e 0%, #4da6d8 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
-          <g transform="translate(50, 50)">
-            <rect x="-20" y="-5" width="40" height="30" fill="#fff" opacity="0.9" transform="skewY(-5)"/>
-            <rect x="-18" y="-12" width="36" height="28" fill="#fff" opacity="0.85" transform="skewY(-3)"/>
-            <rect x="-16" y="-18" width="32" height="26" fill="#fff" opacity="0.8" transform="skewY(-1)"/>
-            <rect x="-14" y="-23" width="28" height="24" fill="#fff" opacity="0.6"/>
-          </g>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
         </svg>
       </div>
       <h1 class="pf-title" style="margin-bottom:0">Printer Profiles</h1>
@@ -54,13 +51,10 @@
             {% if profile.reverse_pages %}
               <span class="pf-tag">Reverse pages</span>
             {% endif %}
-            {% if profile.duplex_mode %}
-              <span class="pf-tag">Duplex</span>
-            {% endif %}
             {% if profile.auto_print %}
               <span class="pf-tag">Auto print</span>
             {% endif %}
-            {% if not profile.reverse_pages and not profile.duplex_mode and not profile.auto_print %}
+            {% if not profile.reverse_pages and not profile.auto_print %}
               <span class="pf-tag" style="color:var(--ink-ghost)">No special settings</span>
             {% endif %}
           </div>
@@ -155,12 +149,6 @@
               {{ form.reverse_pages }}
               <span>
                 <span class="pf-check-label">Reverse page order</span>
-              </span>
-            </label>
-            <label class="pf-check-row">
-              {{ form.duplex_mode }}
-              <span>
-                <span class="pf-check-label">Duplex mode</span>
               </span>
             </label>
             <label class="pf-check-row">
