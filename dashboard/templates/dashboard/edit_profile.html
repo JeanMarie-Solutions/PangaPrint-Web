@@ -1,76 +1,104 @@
 {% extends 'base.html' %}
 
-{% block title %}Edit Printer Profile - PrintFix Assistant{% endblock %}
+{% block title %}Edit Printer Profile — PrintFix{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <div>
-                    <h4 class="mb-0"><i class="bi bi-pencil me-2"></i>Edit Printer Profile</h4>
-                    <small class="text-muted">Update the printer profile settings below.</small>
-                </div>
-                <a href="{% url 'printer_profiles' %}" class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i>Back
-                </a>
-            </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="{{ form.name.id_for_label }}">Profile Name</label>
-                            {{ form.name }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="{{ form.is_default.id_for_label }}">Default Profile</label>
-                            <div class="form-check mt-2">
-                                {{ form.is_default }}
-                                <label class="form-check-label" for="{{ form.is_default.id_for_label }}">Use as default</label>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="mb-3 mt-3">
-                        <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
-                        {{ form.description }}
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="form-check">
-                                {{ form.reverse_pages }}
-                                <label class="form-check-label" for="{{ form.reverse_pages.id_for_label }}">Reverse Page Order</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-check">
-                                {{ form.duplex_mode }}
-                                <label class="form-check-label" for="{{ form.duplex_mode.id_for_label }}">Duplex Mode</label>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-check">
-                                {{ form.auto_print }}
-                                <label class="form-check-label" for="{{ form.auto_print.id_for_label }}">Auto Print</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3 mt-3">
-                        <label class="form-label" for="{{ form.watch_folder.id_for_label }}">Watch Folder</label>
-                        {{ form.watch_folder }}
-                    </div>
-
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-save me-1"></i>Save Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+<div class="pf-topbar">
+  <div>
+    <p class="pf-eyebrow">Configuration › Printer Profiles</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+      <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg, #1b5e9e 0%, #4da6d8 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
+          <g transform="translate(50, 50)">
+            <rect x="-20" y="-5" width="40" height="30" fill="#fff" opacity="0.9" transform="skewY(-5)"/>
+            <rect x="-18" y="-12" width="36" height="28" fill="#fff" opacity="0.85" transform="skewY(-3)"/>
+            <rect x="-16" y="-18" width="32" height="26" fill="#fff" opacity="0.8" transform="skewY(-1)"/>
+            <rect x="-14" y="-23" width="28" height="24" fill="#fff" opacity="0.6"/>
+          </g>
+        </svg>
+      </div>
+      <h1 class="pf-title" style="margin-bottom:0">Edit Profile</h1>
     </div>
+    <p class="pf-subtitle">Update the settings for this printer profile</p>
+  </div>
+  <a href="{% url 'printer_profiles' %}" class="pf-btn pf-btn-ghost">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Back
+  </a>
 </div>
+
+<div style="max-width:640px">
+  <div class="pf-card">
+    <div class="pf-card-head">
+      <p class="pf-card-title">Profile settings</p>
+    </div>
+    <div class="pf-card-body">
+      <form method="post">
+        {% csrf_token %}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
+          <div class="pf-field" style="margin:0">
+            <label class="pf-label" for="{{ form.name.id_for_label }}">Profile name</label>
+            {{ form.name }}
+          </div>
+          <div class="pf-field" style="margin:0">
+            <label class="pf-label">Default profile</label>
+            <label class="pf-check-row">
+              {{ form.is_default }}
+              <span>
+                <span class="pf-check-label">Use as default</span>
+                <span class="pf-check-hint">Applied when no profile is selected</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="pf-field">
+          <label class="pf-label" for="{{ form.description.id_for_label }}">Description</label>
+          {{ form.description }}
+        </div>
+
+        <div class="pf-divider"></div>
+
+        <p class="pf-label" style="margin-bottom:.75rem">Processing options</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.5rem">
+          <label class="pf-check-row">
+            {{ form.reverse_pages }}
+            <span>
+              <span class="pf-check-label">Reverse pages</span>
+            </span>
+          </label>
+          <label class="pf-check-row">
+            {{ form.duplex_mode }}
+            <span>
+              <span class="pf-check-label">Duplex mode</span>
+            </span>
+          </label>
+          <label class="pf-check-row">
+            {{ form.auto_print }}
+            <span>
+              <span class="pf-check-label">Auto print</span>
+            </span>
+          </label>
+        </div>
+
+        <div class="pf-field" style="margin-bottom:2rem">
+          <label class="pf-label" for="{{ form.watch_folder.id_for_label }}">Watch folder <span style="color:var(--ink-ghost);font-weight:400">(optional)</span></label>
+          {{ form.watch_folder }}
+          <p class="pf-hint">Leave empty to use the global watch folder</p>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end">
+          <button type="submit" class="pf-btn pf-btn-dark">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save changes
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

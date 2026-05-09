@@ -1,158 +1,189 @@
 {% extends 'base.html' %}
 
-{% block title %}Printer Profiles - PrintFix Assistant{% endblock %}
+{% block title %}Printer Profiles — PrintFix{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="bi bi-gear me-2"></i>
-                Printer Profiles
-            </h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProfileModal">
-                <i class="bi bi-plus-circle me-2"></i>
-                Add Profile
-            </button>
-        </div>
 
-        {% if profiles %}
-            <div class="row">
-                {% for profile in profiles %}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">{{ profile.name }}</h5>
-                                {% if profile.is_default %}
-                                    <span class="badge bg-primary">Default</span>
-                                {% endif %}
-                            </div>
-                            <div class="card-body">
-                                {% if profile.description %}
-                                    <p class="text-muted">{{ profile.description }}</p>
-                                {% endif %}
-
-                                <div class="mb-2">
-                                    <small class="text-muted">Settings:</small>
-                                    <div class="mt-1">
-                                        {% if profile.reverse_pages %}
-                                            <span class="badge bg-info me-1">Reverse Pages</span>
-                                        {% endif %}
-                                        {% if profile.duplex_mode %}
-                                            <span class="badge bg-warning me-1">Duplex</span>
-                                        {% endif %}
-                                        {% if profile.auto_print %}
-                                            <span class="badge bg-success me-1">Auto Print</span>
-                                        {% endif %}
-                                    </div>
-                                </div>
-
-                                {% if profile.watch_folder %}
-                                    <div class="mb-2">
-                                        <small class="text-muted">Watch Folder:</small>
-                                        <div class="text-break">{{ profile.watch_folder }}</div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="card-footer">
-                                <div class="btn-group w-100">
-                                    <a href="{% url 'edit_printer_profile' profile.pk %}" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-pencil"></i> Edit
-                                    </a>
-                                    <a href="{% url 'delete_printer_profile' profile.pk %}" class="btn btn-outline-danger btn-sm">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="bi bi-gear fs-1 text-muted mb-3"></i>
-                <h4 class="text-muted">No Printer Profiles</h4>
-                <p class="text-muted">Create your first printer profile to get started.</p>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProfileModal">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Create Profile
-                </button>
-            </div>
-        {% endif %}
+<div class="pf-topbar">
+  <div>
+    <p class="pf-eyebrow">Configuration</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+      <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg, #1b5e9e 0%, #4da6d8 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
+          <g transform="translate(50, 50)">
+            <rect x="-20" y="-5" width="40" height="30" fill="#fff" opacity="0.9" transform="skewY(-5)"/>
+            <rect x="-18" y="-12" width="36" height="28" fill="#fff" opacity="0.85" transform="skewY(-3)"/>
+            <rect x="-16" y="-18" width="32" height="26" fill="#fff" opacity="0.8" transform="skewY(-1)"/>
+            <rect x="-14" y="-23" width="28" height="24" fill="#fff" opacity="0.6"/>
+          </g>
+        </svg>
+      </div>
+      <h1 class="pf-title" style="margin-bottom:0">Printer Profiles</h1>
     </div>
+    <p class="pf-subtitle">Manage processing presets for different print workflows</p>
+  </div>
+  <button class="pf-btn pf-btn-dark" data-bs-toggle="modal" data-bs-target="#addProfileModal">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Profile
+  </button>
 </div>
 
-<!-- Add Profile Modal -->
+{% if profiles %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
+    {% for profile in profiles %}
+      <div class="pf-card" style="display:flex;flex-direction:column">
+
+        <div class="pf-card-head" style="gap:.75rem">
+          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            </div>
+            <p class="pf-card-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ profile.name }}</p>
+          </div>
+          {% if profile.is_default %}
+            <span class="pf-badge pf-badge-accent" style="flex-shrink:0">Default</span>
+          {% endif %}
+        </div>
+
+        <div class="pf-card-body" style="flex:1">
+          {% if profile.description %}
+            <p style="font-size:13px;color:var(--ink-soft);margin-bottom:1rem;line-height:1.6">{{ profile.description }}</p>
+          {% endif %}
+
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:{% if profile.watch_folder %}1rem{% else %}0{% endif %}">
+            {% if profile.reverse_pages %}
+              <span class="pf-tag">Reverse pages</span>
+            {% endif %}
+            {% if profile.duplex_mode %}
+              <span class="pf-tag">Duplex</span>
+            {% endif %}
+            {% if profile.auto_print %}
+              <span class="pf-tag">Auto print</span>
+            {% endif %}
+            {% if not profile.reverse_pages and not profile.duplex_mode and not profile.auto_print %}
+              <span class="pf-tag" style="color:var(--ink-ghost)">No special settings</span>
+            {% endif %}
+          </div>
+
+          {% if profile.watch_folder %}
+            <div style="background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:var(--radius-sm);padding:8px 10px">
+              <p style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-ghost);margin-bottom:3px">Watch folder</p>
+              <p style="font-size:12px;color:var(--ink-soft);word-break:break-all;font-family:monospace">{{ profile.watch_folder }}</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="pf-card-footer" style="display:flex;gap:8px">
+          <a href="{% url 'edit_printer_profile' profile.pk %}" class="pf-btn pf-btn-ghost pf-btn-sm" style="flex:1;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </a>
+          <a href="{% url 'delete_printer_profile' profile.pk %}" class="pf-btn pf-btn-danger pf-btn-sm" style="flex:1;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Delete
+          </a>
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="pf-card">
+    <div class="pf-empty">
+      <div class="pf-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div>
+      <p class="pf-empty-title">No profiles yet</p>
+      <p class="pf-empty-sub">Create a printer profile to save processing settings for reuse.</p>
+      <button class="pf-btn pf-btn-dark" style="margin-top:1rem" data-bs-toggle="modal" data-bs-target="#addProfileModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Create profile
+      </button>
+    </div>
+  </div>
+{% endif %}
+
+
+<!-- ── ADD PROFILE MODAL ── -->
+<style>
+  .pf-modal-backdrop { position:fixed;inset:0;background:rgba(14,14,15,.45);z-index:1050;display:none;align-items:center;justify-content:center;padding:1rem; }
+  .pf-modal-backdrop.show { display:flex; }
+  .pf-modal { background:var(--surface);border-radius:var(--radius);border:0.5px solid var(--border-strong);width:100%;max-width:580px;max-height:90vh;overflow-y:auto; }
+  .pf-modal-head { display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.5rem;border-bottom:0.5px solid var(--border); }
+  .pf-modal-title { font-family:var(--ff-head);font-size:15px;font-weight:700;letter-spacing:-.02em; }
+  .pf-modal-close { width:28px;height:28px;border-radius:6px;border:none;background:var(--surface-2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background var(--t); }
+  .pf-modal-close:hover { background:var(--surface-3); }
+  .pf-modal-body { padding:1.5rem; }
+  .pf-modal-foot { padding:1rem 1.5rem;border-top:0.5px solid var(--border);display:flex;justify-content:flex-end;gap:8px; }
+  .pf-grid-2 { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
+  .pf-grid-3 { display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem; }
+  @media(max-width:500px){ .pf-grid-2,.pf-grid-3{ grid-template-columns:1fr; } }
+</style>
+
 <div class="modal fade" id="addProfileModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add Printer Profile</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" style="border-radius:var(--radius);border:0.5px solid var(--border-strong);font-family:var(--ff-body)">
+      <div class="modal-header" style="border-bottom:0.5px solid var(--border);padding:1.1rem 1.5rem">
+        <h5 class="modal-title" style="font-family:var(--ff-head);font-size:15px;font-weight:700;letter-spacing:-.02em">Add Printer Profile</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post">
+        <div class="modal-body" style="padding:1.5rem">
+          {% csrf_token %}
+          <div class="pf-grid-2" style="margin-bottom:1.25rem">
+            <div class="pf-field" style="margin:0">
+              <label class="pf-label" for="{{ form.name.id_for_label }}">Profile name</label>
+              {{ form.name }}
             </div>
-            <form method="post">
-                <div class="modal-body">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">Profile Name</label>
-                            {{ form.name }}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="{{ form.is_default.id_for_label }}" class="form-label">Default Profile</label>
-                            <div class="form-check">
-                                {{ form.is_default }}
-                                <label class="form-check-label" for="{{ form.is_default.id_for_label }}">
-                                    Set as default profile
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+            <div class="pf-field" style="margin:0">
+              <label class="pf-label">Options</label>
+              <label class="pf-check-row">
+                {{ form.is_default }}
+                <span>
+                  <span class="pf-check-label">Set as default profile</span>
+                </span>
+              </label>
+            </div>
+          </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                        {{ form.description }}
-                    </div>
+          <div class="pf-field">
+            <label class="pf-label" for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+          </div>
 
-                    <div class="row">
-                        <div class="col-md-4 mb-3">
-                            <div class="form-check">
-                                {{ form.reverse_pages }}
-                                <label class="form-check-label" for="{{ form.reverse_pages.id_for_label }}">
-                                    Reverse Page Order
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="form-check">
-                                {{ form.duplex_mode }}
-                                <label class="form-check-label" for="{{ form.duplex_mode.id_for_label }}">
-                                    Duplex Mode
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="form-check">
-                                {{ form.auto_print }}
-                                <label class="form-check-label" for="{{ form.auto_print.id_for_label }}">
-                                    Auto Launch Print
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+          <div class="pf-grid-3" style="margin-bottom:1.25rem">
+            <label class="pf-check-row">
+              {{ form.reverse_pages }}
+              <span>
+                <span class="pf-check-label">Reverse page order</span>
+              </span>
+            </label>
+            <label class="pf-check-row">
+              {{ form.duplex_mode }}
+              <span>
+                <span class="pf-check-label">Duplex mode</span>
+              </span>
+            </label>
+            <label class="pf-check-row">
+              {{ form.auto_print }}
+              <span>
+                <span class="pf-check-label">Auto launch print</span>
+              </span>
+            </label>
+          </div>
 
-                    <div class="mb-3">
-                        <label for="{{ form.watch_folder.id_for_label }}" class="form-label">Watch Folder (Optional)</label>
-                        {{ form.watch_folder }}
-                        <div class="form-text">Leave empty to use global watch folder</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Profile</button>
-                </div>
-            </form>
+          <div class="pf-field">
+            <label class="pf-label" for="{{ form.watch_folder.id_for_label }}">Watch folder <span style="color:var(--ink-ghost);font-weight:400">(optional)</span></label>
+            {{ form.watch_folder }}
+            <p class="pf-hint">Leave empty to use the global watch folder</p>
+          </div>
         </div>
+        <div class="modal-footer" style="border-top:0.5px solid var(--border);padding:1rem 1.5rem;display:flex;gap:8px;justify-content:flex-end">
+          <button type="button" class="pf-btn pf-btn-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="pf-btn pf-btn-dark">Create profile</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
+
 {% endblock %}

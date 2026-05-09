@@ -1,100 +1,613 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}PrintFix Assistant{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PrintFix Assistant{% endblock %}</title>
 
-    <!-- Bootstrap 5.3.3 (CSS + JS Bundle) -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 
-<!-- Bootstrap Icons 1.11.3 -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Bootstrap 5.3.3 (still needed for modals / form widgets) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 
-<!-- Google Fonts: Inter (modern variable font) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    /* ─────────────────────────────────────────────
+       DESIGN TOKENS - PrintFix Theme
+    ───────────────────────────────────────────── */
+    :root {
+      --ink:           #1a2332;
+      --ink-soft:      #4a5f7f;
+      --ink-ghost:     #7a8fa6;
+      --surface:       #ffffff;
+      --surface-2:     #f7fafc;
+      --surface-3:     #e8f0f7;
+      --border:        rgba(26,35,50,0.06);
+      --border-strong: rgba(26,35,50,0.12);
+      --accent:        #1b5e9e;
+      --accent-2:      #d6e7f5;
+      --accent-3:      #b3d9ed;
+      --accent-bright: #4da6d8;
+      --success:       #0d7c4a;
+      --success-bg:    #e6f5ed;
+      --danger:        #c0392b;
+      --danger-bg:     #fdecea;
+      --warn:          #a05c00;
+      --warn-bg:       #fef3e2;
+      --radius:        12px;
+      --radius-sm:     8px;
+      --radius-pill:   100px;
+      --ff-head:       'Poppins', sans-serif;
+      --ff-body:       'DM Sans', sans-serif;
+      --nav-w:         220px;
+      --t:             180ms cubic-bezier(0.4,0,0.2,1);
+      --shadow:        0 8px 28px rgba(27,94,158,0.1);
+    }
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    /* ─────────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      font-family: var(--ff-body);
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--surface-2);
+      min-height: 100%;
+      display: flex;
+    }
 
-    {% block extra_head %}{% endblock %}
+    /* ─────────────────────────────────────────────
+       SIDEBAR NAV
+    ───────────────────────────────────────────── */
+    .pf-sidebar {
+      width: var(--nav-w);
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 0.5px solid var(--border-strong);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+      padding: 0 0 1.5rem;
+      transition: width var(--t);
+    }
+
+    .pf-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 1.5rem 1.25rem 1.25rem;
+      border-bottom: 0.5px solid var(--border);
+      text-decoration: none;
+    }
+
+    .pf-brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(27,94,158,0.25);
+    }
+
+    .pf-brand-icon svg { width: 20px; height: 20px; stroke: #fff; }
+    .pf-brand-icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+
+    .pf-brand-name {
+      font-family: var(--ff-head);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+    }
+
+    .pf-brand-tagline {
+      font-size: 9px;
+      color: var(--accent-bright);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .pf-nav {
+      flex: 1;
+      padding: 1rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .pf-nav-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-ghost);
+      padding: 0.5rem 0.5rem 0.25rem;
+      margin-top: 0.5rem;
+    }
+    .pf-nav-label:first-child { margin-top: 0; }
+
+    .pf-nav a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-soft);
+      text-decoration: none;
+      transition: background var(--t), color var(--t);
+    }
+
+    .pf-nav a svg {
+      width: 15px; height: 15px;
+      stroke: currentColor;
+      flex-shrink: 0;
+    }
+
+    .pf-nav a:hover { background: var(--surface-3); color: var(--ink); }
+    .pf-nav a.active { background: var(--surface-3); color: var(--accent); font-weight: 600; border-left: 3px solid var(--accent); padding-left: 9px; }
+    .pf-nav a.active svg { stroke: var(--accent); }
+
+    /* ─────────────────────────────────────────────
+       MAIN CONTENT AREA
+    ───────────────────────────────────────────── */
+    .pf-main {
+      margin-left: var(--nav-w);
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: margin-left var(--t);
+    }
+
+    .pf-page {
+      flex: 1;
+      padding: 2.5rem 2rem 4rem;
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    /* ─────────────────────────────────────────────
+       SHARED COMPONENTS
+    ───────────────────────────────────────────── */
+
+    /* Page header */
+    .pf-topbar {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .pf-eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ink-ghost); margin-bottom: 4px;
+    }
+    .pf-title {
+      font-family: var(--ff-head);
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800; letter-spacing: -.03em; line-height: 1.1; color: var(--ink);
+    }
+    .pf-subtitle { margin-top: 5px; font-size: 13px; color: var(--ink-soft); font-weight: 300; }
+
+    /* Buttons */
+    .pf-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--ff-body); font-size: 13px; font-weight: 500;
+      border-radius: var(--radius-pill); padding: 9px 18px;
+      cursor: pointer; text-decoration: none; white-space: nowrap;
+      transition: background var(--t), color var(--t), transform var(--t), opacity var(--t);
+      border: none; line-height: 1;
+    }
+    .pf-btn svg { width: 13px; height: 13px; stroke: currentColor; flex-shrink: 0; }
+    .pf-btn-dark  { background: var(--accent); color: #fff; }
+    .pf-btn-dark:hover  { background: #1a5086; transform: translateY(-2px); color: #fff; box-shadow: 0 6px 20px rgba(27,94,158,0.2); }
+    .pf-btn-ghost { background: var(--surface); color: var(--accent); border: 1.5px solid var(--accent-2); }
+    .pf-btn-ghost:hover { background: var(--surface-3); color: var(--accent); border-color: var(--accent); }
+    .pf-btn-danger { background: var(--danger-bg); color: var(--danger); }
+    .pf-btn-danger:hover { opacity: 0.8; }
+    .pf-btn-accent { background: var(--accent-2); color: var(--accent); }
+    .pf-btn-accent:hover { background: var(--accent-3); color: var(--accent); }
+    .pf-btn-sm { padding: 6px 13px; font-size: 12px; }
+    .pf-btn-sm svg { width: 11px; height: 11px; }
+
+    /* Card */
+    .pf-card {
+      background: var(--surface);
+      border: 0.5px solid var(--border-strong);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .pf-card-head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; padding: 1.1rem 1.5rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .pf-card-title {
+      font-family: var(--ff-head); font-size: 15px; font-weight: 700;
+      letter-spacing: -.02em; color: var(--ink);
+    }
+    .pf-card-subtitle { font-size: 11px; color: var(--ink-ghost); margin-top: 2px; }
+    .pf-card-body { padding: 1.5rem; }
+    .pf-card-footer { padding: 1rem 1.5rem; border-top: 0.5px solid var(--border); }
+
+    /* Stat cards */
+    .pf-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px; margin-bottom: 2.5rem;
+    }
+    .pf-stat {
+      background: var(--surface); border: 0.5px solid var(--border-strong);
+      border-radius: var(--radius); padding: 1.1rem 1.25rem;
+      position: relative; overflow: hidden;
+      transition: transform var(--t);
+    }
+    .pf-stat:hover { transform: translateY(-2px); }
+    .pf-stat::after {
+      content: ''; position: absolute; bottom: -20px; right: -20px;
+      width: 70px; height: 70px; border-radius: 50%;
+      background: var(--ink); opacity: .06;
+    }
+    .pf-stat:nth-child(1)::after { background: var(--accent); opacity:.12; }
+    .pf-stat:nth-child(2)::after { background: var(--accent-bright); opacity:.12; }
+    .pf-stat:nth-child(3)::after { background: #0d7c4a; opacity:.12; }
+    .pf-stat:nth-child(4)::after { background: var(--accent); opacity:.12; }
+    .pf-stat-label {
+      font-size: 10px; font-weight: 500; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--ink-ghost); margin-bottom: 8px;
+    }
+    .pf-stat-value {
+      font-family: var(--ff-head); font-size: 36px; font-weight: 800;
+      letter-spacing: -.04em; line-height: 1; color: var(--accent);
+    }
+    .pf-stat-rate .pf-stat-value { color: var(--accent-bright); }
+
+    /* Badges */
+    .pf-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 500; letter-spacing: .02em;
+      padding: 3px 10px; border-radius: var(--radius-pill);
+    }
+    .pf-badge::before {
+      content: ''; width: 5px; height: 5px;
+      border-radius: 50%; background: currentColor;
+    }
+    .pf-badge-success { background: var(--success-bg); color: var(--success); }
+    .pf-badge-danger  { background: var(--danger-bg);  color: var(--danger); }
+    .pf-badge-warn    { background: var(--warn-bg);    color: var(--warn); }
+    .pf-badge-accent  { background: var(--accent-2);   color: var(--accent); }
+
+    /* Feature badges (no dot) */
+    .pf-tag {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 500;
+      padding: 2px 8px; border-radius: var(--radius-pill);
+      background: var(--surface-2); color: var(--ink-soft);
+      border: 0.5px solid var(--border-strong);
+    }
+
+    /* Table */
+    .pf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .pf-table thead th {
+      padding: 9px 1.5rem; text-align: left;
+      font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--ink-ghost); background: var(--surface-2);
+      border-bottom: 0.5px solid var(--border); white-space: nowrap;
+    }
+    .pf-table tbody tr { border-bottom: 0.5px solid var(--border); transition: background var(--t); }
+    .pf-table tbody tr:last-child { border-bottom: none; }
+    .pf-table tbody tr:hover { background: var(--surface-2); }
+    .pf-table tbody td { padding: 12px 1.5rem; vertical-align: middle; }
+
+    /* File name cell */
+    .pf-filename {
+      font-weight: 500; font-size: 13px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .pf-ficon {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: var(--surface-3);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .pf-ficon svg { width: 13px; height: 13px; stroke: var(--ink-soft); }
+
+    /* Muted dash */
+    .pf-dash { color: var(--ink-ghost); font-size: 16px; }
+    .pf-muted { color: var(--ink-ghost); font-size: 12px; }
+    .pf-err   { color: var(--danger); font-size: 12px; cursor: help; }
+
+    /* Empty state */
+    .pf-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 4rem 2rem; text-align: center;
+    }
+    .pf-empty-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--surface-3);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .pf-empty-icon svg { width: 24px; height: 24px; stroke: var(--ink-ghost); }
+    .pf-empty-title { font-family: var(--ff-head); font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+    .pf-empty-sub   { font-size: 13px; color: var(--ink-ghost); max-width: 280px; line-height: 1.6; }
+
+    /* Form fields (override Bootstrap) */
+    .pf-field { margin-bottom: 1.25rem; }
+    .pf-label {
+      display: block; font-size: 12px; font-weight: 500;
+      color: var(--ink-soft); margin-bottom: 6px; letter-spacing: .01em;
+    }
+    .pf-input, .pf-select, .pf-textarea {
+      width: 100%; font-family: var(--ff-body); font-size: 13px;
+      color: var(--ink); background: var(--surface-2);
+      border: 0.5px solid var(--border-strong); border-radius: var(--radius-sm);
+      padding: 9px 12px; outline: none;
+      transition: border-color var(--t), background var(--t);
+      -webkit-appearance: none; appearance: none;
+    }
+    .pf-input:focus, .pf-select:focus, .pf-textarea:focus {
+      border-color: var(--accent); background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(27,94,158,.12);
+    }
+    .pf-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+    .pf-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239898a8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 32px; cursor: pointer; }
+    .pf-hint { font-size: 11px; color: var(--ink-ghost); margin-top: 5px; }
+    .pf-error { font-size: 11px; color: var(--danger); margin-top: 4px; }
+
+    /* Custom checkbox */
+    .pf-check-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 12px; border-radius: var(--radius-sm);
+      background: var(--surface-2); border: 0.5px solid var(--border-strong);
+      cursor: pointer; transition: background var(--t);
+    }
+    .pf-check-row:hover { background: var(--surface-3); }
+    .pf-check-row input[type="checkbox"] {
+      width: 15px; height: 15px; cursor: pointer; accent-color: var(--accent); flex-shrink: 0;
+    }
+    .pf-check-label { font-size: 13px; color: var(--ink); cursor: pointer; line-height: 1.3; }
+    .pf-check-hint  { font-size: 11px; color: var(--ink-ghost); }
+
+    /* Toast */
+    .pf-toasts {
+      position: fixed; top: 1rem; right: 1rem; z-index: 999;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .pf-toast {
+      background: var(--ink); color: #fff;
+      font-size: 13px; padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; gap: 10px;
+      pointer-events: all;
+      animation: pf-toast-in 0.25s ease;
+    }
+    .pf-toast-success { background: var(--success); }
+    .pf-toast-danger  { background: var(--danger); }
+    .pf-toast-warn    { background: #8a4e00; }
+    @keyframes pf-toast-in {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Dividers */
+    .pf-divider { height: 0.5px; background: var(--border); margin: 1.5rem 0; }
+
+    /* Danger zone */
+    .pf-danger-zone {
+      border: 0.5px solid var(--danger-bg);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      background: #fff;
+    }
+    .pf-danger-title {
+      font-family: var(--ff-head); font-size: 13px; font-weight: 700;
+      color: var(--danger); margin-bottom: 4px;
+    }
+
+    /* Sidebar minimize */
+    .pf-sidebar-toggle {
+      width: 100%;
+      padding: 0.75rem;
+      margin-top: auto;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink-ghost);
+      transition: all var(--t);
+      border-top: 0.5px solid var(--border);
+    }
+    .pf-sidebar-toggle:hover {
+      background: var(--surface-2);
+      color: var(--ink-soft);
+    }
+    .pf-sidebar-toggle svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .pf-sidebar.minimized {
+      --nav-w: 70px;
+    }
+    .pf-sidebar.minimized .pf-brand-name,
+    .pf-sidebar.minimized .pf-brand-tagline,
+    .pf-sidebar.minimized .pf-nav-label,
+    .pf-sidebar.minimized .pf-nav a span {
+      display: none;
+    }
+    .pf-sidebar.minimized .pf-brand {
+      justify-content: center;
+      padding: 1.5rem 0.75rem;
+    }
+    .pf-sidebar.minimized .pf-brand-icon {
+      margin: 0;
+    }
+    .pf-sidebar.minimized .pf-nav {
+      padding: 0.5rem 0;
+    }
+    .pf-sidebar.minimized .pf-nav a {
+      justify-content: center;
+      gap: 0;
+      padding: 10px;
+      border-radius: 8px;
+      position: relative;
+    }
+    .pf-sidebar.minimized .pf-nav a svg {
+      width: 18px;
+      height: 18px;
+    }
+    .pf-sidebar.minimized .pf-nav a::after {
+      content: attr(data-label);
+      position: absolute;
+      left: 100%;
+      margin-left: 8px;
+      padding: 6px 10px;
+      background: var(--ink);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--t);
+      z-index: 1000;
+    }
+    .pf-sidebar.minimized .pf-nav a:hover::after {
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .pf-sidebar { transform: translateX(-100%); transition: transform var(--t); }
+      .pf-sidebar.open { transform: translateX(0); }
+      .pf-main { margin-left: 0; }
+      .pf-page { padding: 1.5rem 1rem 3rem; }
+    }
+  </style>
+
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'dashboard_home' %}">
-                <i class="bi bi-printer-fill me-2"></i>
-                PrintFix Assistant
-            </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+  <!-- ── SIDEBAR ── -->
+  <nav class="pf-sidebar">
+    <a href="{% url 'dashboard_home' %}" class="pf-brand">
+      <div class="pf-brand-icon">
+        <img src="{% static 'logo.svg' %}" alt="PrintFix Logo" style="width: 100%; height: 100%; object-fit: contain;">
+      </div>
+      <div>
+        <div class="pf-brand-name">PrintFix</div>
+        <div class="pf-brand-tagline">Smart Print</div>
+      </div>
+    </a>
 
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'dashboard_home' %}">
-                            <i class="bi bi-house-door me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'upload_pdf' %}">
-                            <i class="bi bi-upload me-1"></i>Upload PDF
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'printer_profiles' %}">
-                            <i class="bi bi-gear me-1"></i>Profiles
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'processing_history' %}">
-                            <i class="bi bi-clock-history me-1"></i>History
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'system_settings' %}">
-                            <i class="bi bi-sliders me-1"></i>Settings
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <div class="pf-nav">
+      <div class="pf-nav-label">Main</div>
+      <a href="{% url 'dashboard_home' %}" data-label="Dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="{% url 'upload_pdf' %}" data-label="Upload">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Upload PDF
+      </a>
+      <a href="{% url 'processing_history' %}" data-label="History">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        History
+      </a>
 
-    <!-- Main Content -->
-    <div class="container-fluid mt-4">
-        {% block content %}{% endblock %}
+      <div class="pf-nav-label">Configuration</div>
+      <a href="{% url 'printer_profiles' %}" data-label="Profiles">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Printer Profiles
+      </a>
+      <a href="{% url 'system_settings' %}" data-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </a>
     </div>
 
-    <!-- Toast Container -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="toast align-items-center text-white bg-{{ message.tags|default:'primary' }} border-0"
-                     role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            {{ message }}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                                data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
+    <button class="pf-sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/><line x1="1" y1="6" x2="1" y2="18"/>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- ── MAIN ── -->
+  <div class="pf-main">
+    <div class="pf-page">
+      {% block content %}{% endblock %}
     </div>
+  </div>
 
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- ── TOASTS ── -->
+  {% if messages %}
+  <div class="pf-toasts" id="pf-toasts">
+    {% for message in messages %}
+      <div class="pf-toast pf-toast-{{ message.tags }}" data-dismiss="3000">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          {% if message.tags == 'success' %}<polyline points="20 6 9 17 4 12"/>{% elif message.tags == 'danger' or message.tags == 'error' %}<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>{% else %}<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>{% endif %}
+        </svg>
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-    {% block extra_js %}{% endblock %}
+  <script>
+    // Auto-dismiss toasts
+    document.querySelectorAll('[data-dismiss]').forEach(el => {
+      const delay = parseInt(el.dataset.dismiss) || 3000;
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.3s';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 300);
+      }, delay);
+    });
+
+    // Active nav highlight
+    const links = document.querySelectorAll('.pf-nav a');
+    links.forEach(l => {
+      if (l.href === window.location.href) l.classList.add('active');
+    });
+
+    // Sidebar toggle
+    const sidebar = document.querySelector('.pf-sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const isMinimized = localStorage.getItem('sidebarMinimized') === 'true';
+    
+    if (isMinimized) {
+      sidebar.classList.add('minimized');
+    }
+    
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('minimized');
+      localStorage.setItem('sidebarMinimized', sidebar.classList.contains('minimized'));
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

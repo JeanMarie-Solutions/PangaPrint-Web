@@ -1,114 +1,129 @@
 {% extends 'base.html' %}
 
-{% block title %}System Settings - PrintFix Assistant{% endblock %}
+{% block title %}System Settings — PrintFix{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>
-                <i class="bi bi-sliders me-2"></i>
-                System Settings
-            </h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSettingModal">
-                <i class="bi bi-plus-circle me-2"></i>
-                Add Setting
-            </button>
-        </div>
 
-        {% if settings %}
-            <div class="row">
-                {% for setting in settings %}
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0">{{ setting.key }}</h6>
-                                <small class="text-muted">Updated: {{ setting.updated_at|date:"M d, H:i" }}</small>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-2">
-                                    <strong>Value:</strong>
-                                    <div class="text-break bg-light p-2 rounded">{{ setting.value }}</div>
-                                </div>
-                                {% if setting.description %}
-                                    <div>
-                                        <strong>Description:</strong>
-                                        <div class="text-muted">{{ setting.description }}</div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                            <div class="card-footer">
-                                <button class="btn btn-outline-primary btn-sm" onclick="editSetting('{{ setting.key }}', '{{ setting.value }}', '{{ setting.description }}')">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="bi bi-sliders fs-1 text-muted mb-3"></i>
-                <h4 class="text-muted">No System Settings</h4>
-                <p class="text-muted">Add system settings to configure the application.</p>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSettingModal">
-                    <i class="bi bi-plus-circle me-2"></i>
-                    Add Setting
-                </button>
-            </div>
-        {% endif %}
+<div class="pf-topbar">
+  <div>
+    <p class="pf-eyebrow">Configuration</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+      <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg, #1b5e9e 0%, #4da6d8 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
+          <g transform="translate(50, 50)">
+            <rect x="-20" y="-5" width="40" height="30" fill="#fff" opacity="0.9" transform="skewY(-5)"/>
+            <rect x="-18" y="-12" width="36" height="28" fill="#fff" opacity="0.85" transform="skewY(-3)"/>
+            <rect x="-16" y="-18" width="32" height="26" fill="#fff" opacity="0.8" transform="skewY(-1)"/>
+            <rect x="-14" y="-23" width="28" height="24" fill="#fff" opacity="0.6"/>
+          </g>
+        </svg>
+      </div>
+      <h1 class="pf-title" style="margin-bottom:0">System Settings</h1>
     </div>
+    <p class="pf-subtitle">Global key-value configuration for the application</p>
+  </div>
+  <button class="pf-btn pf-btn-dark" data-bs-toggle="modal" data-bs-target="#addSettingModal">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add Setting
+  </button>
 </div>
 
-<!-- Add/Edit Setting Modal -->
+{% if settings %}
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
+    {% for setting in settings %}
+      <div class="pf-card">
+
+        <div class="pf-card-head">
+          <div style="min-width:0;flex:1">
+            <p class="pf-card-title" style="font-family:var(--ff-body);font-size:13px;font-weight:500;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+              <code style="background:var(--accent-2);border:1px solid var(--accent);border-radius:5px;padding:2px 7px;font-size:12px;color:var(--accent)">{{ setting.key }}</code>
+            </p>
+          </div>
+          <span class="pf-muted">{{ setting.updated_at|date:"M d, H:i" }}</span>
+        </div>
+
+        <div class="pf-card-body">
+          <div style="background:var(--accent-2);border:1px solid var(--accent-3);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:{% if setting.description %}1rem{% else %}0{% endif %}">
+            <p style="font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px">Value</p>
+            <p style="font-size:13px;color:var(--accent);word-break:break-all;line-height:1.5;font-weight:500">{{ setting.value }}</p>
+          </div>
+          {% if setting.description %}
+            <p style="font-size:13px;color:var(--ink-soft);line-height:1.6">{{ setting.description }}</p>
+          {% endif %}
+        </div>
+
+        <div class="pf-card-footer">
+          <button class="pf-btn pf-btn-ghost pf-btn-sm" onclick="editSetting('{{ setting.key }}', '{{ setting.value }}', '{{ setting.description }}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit
+          </button>
+        </div>
+
+      </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="pf-card">
+    <div class="pf-empty">
+      <div class="pf-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      <p class="pf-empty-title">No settings configured</p>
+      <p class="pf-empty-sub">Add system settings to configure the application behaviour.</p>
+      <button class="pf-btn pf-btn-dark" style="margin-top:1rem" data-bs-toggle="modal" data-bs-target="#addSettingModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add setting
+      </button>
+    </div>
+  </div>
+{% endif %}
+
+
+<!-- ── ADD / EDIT MODAL ── -->
 <div class="modal fade" id="addSettingModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitle">Add System Setting</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post">
-                <div class="modal-body">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="{{ form.key.id_for_label }}" class="form-label">Setting Key</label>
-                        {{ form.key }}
-                        <div class="form-text">Unique identifier for the setting</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.value.id_for_label }}" class="form-label">Value</label>
-                        {{ form.value }}
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
-                        {{ form.description }}
-                        <div class="form-text">Optional description of what this setting does</div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="modalSubmitBtn">Add Setting</button>
-                </div>
-            </form>
+  <div class="modal-dialog">
+    <div class="modal-content" style="border-radius:var(--radius);border:0.5px solid var(--border-strong);font-family:var(--ff-body)">
+      <div class="modal-header" style="border-bottom:0.5px solid var(--border);padding:1.1rem 1.5rem">
+        <h5 class="modal-title" id="modalTitle" style="font-family:var(--ff-head);font-size:15px;font-weight:700;letter-spacing:-.02em">Add System Setting</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="post">
+        <div class="modal-body" style="padding:1.5rem">
+          {% csrf_token %}
+          <div class="pf-field">
+            <label class="pf-label" for="{{ form.key.id_for_label }}">Setting key</label>
+            {{ form.key }}
+            <p class="pf-hint">Unique identifier — e.g. <code>max_file_size_mb</code></p>
+          </div>
+          <div class="pf-field">
+            <label class="pf-label" for="{{ form.value.id_for_label }}">Value</label>
+            {{ form.value }}
+          </div>
+          <div class="pf-field" style="margin-bottom:0">
+            <label class="pf-label" for="{{ form.description.id_for_label }}">Description <span style="color:var(--ink-ghost);font-weight:400">(optional)</span></label>
+            {{ form.description }}
+            <p class="pf-hint">Brief note on what this setting controls</p>
+          </div>
         </div>
+        <div class="modal-footer" style="border-top:0.5px solid var(--border);padding:1rem 1.5rem;display:flex;gap:8px;justify-content:flex-end">
+          <button type="button" class="pf-btn pf-btn-ghost" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="pf-btn pf-btn-dark" id="modalSubmitBtn">Add setting</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
 function editSetting(key, value, description) {
-    document.getElementById('{{ form.key.id_for_label }}').value = key;
-    document.getElementById('{{ form.value.id_for_label }}').value = value;
-    document.getElementById('{{ form.description.id_for_label }}').value = description;
-
-    document.getElementById('modalTitle').textContent = 'Edit System Setting';
-    document.getElementById('modalSubmitBtn').textContent = 'Update Setting';
-
-    new bootstrap.Modal(document.getElementById('addSettingModal')).show();
+  document.getElementById('{{ form.key.id_for_label }}').value = key;
+  document.getElementById('{{ form.value.id_for_label }}').value = value;
+  document.getElementById('{{ form.description.id_for_label }}').value = description;
+  document.getElementById('modalTitle').textContent = 'Edit System Setting';
+  document.getElementById('modalSubmitBtn').textContent = 'Update setting';
+  new bootstrap.Modal(document.getElementById('addSettingModal')).show();
 }
 </script>
 {% endblock %}

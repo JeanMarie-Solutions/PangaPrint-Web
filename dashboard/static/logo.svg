@@ -1,0 +1,26 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Layered geometric squares representing the PrintFix logo -->
+  <defs>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Base dark blue layer -->
+  <g transform="translate(50, 50)">
+    <!-- Bottom layer - darkest -->
+    <rect x="-20" y="-5" width="40" height="30" fill="#1b5e9e" opacity="0.9" transform="skewY(-5)"/>
+    
+    <!-- Middle layer - medium blue -->
+    <rect x="-18" y="-12" width="36" height="28" fill="#2b7ab8" opacity="0.85" transform="skewY(-3)"/>
+    
+    <!-- Top layer - light blue -->
+    <rect x="-16" y="-18" width="32" height="26" fill="#4da6d8" opacity="0.8" transform="skewY(-1)"/>
+    
+    <!-- Accent light layer -->
+    <rect x="-14" y="-23" width="28" height="24" fill="#7ec5e8" opacity="0.6"/>
+    
+    <!-- Highlight top corner -->
+    <path d="M -14 -23 L -14 -15 L -6 -23 Z" fill="#ffffff" opacity="0.4"/>
+  </g>
+</svg>

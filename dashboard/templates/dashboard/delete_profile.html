@@ -1,29 +1,58 @@
 {% extends 'base.html' %}
 
-{% block title %}Delete Printer Profile - PrintFix Assistant{% endblock %}
+{% block title %}Delete Printer Profile — PrintFix{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header">
-                <h4 class="mb-0"><i class="bi bi-trash me-2"></i>Delete Printer Profile</h4>
-            </div>
-            <div class="card-body">
-                <p>Are you sure you want to delete the printer profile <strong>{{ profile.name }}</strong>?</p>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'printer_profiles' %}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left me-1"></i>Cancel
-                        </a>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-trash me-1"></i>Delete Profile
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+
+<div class="pf-topbar">
+  <div>
+    <p class="pf-eyebrow">Configuration › Printer Profiles</p>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+      <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg, #1b5e9e 0%, #4da6d8 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px">
+          <g transform="translate(50, 50)">
+            <rect x="-20" y="-5" width="40" height="30" fill="#fff" opacity="0.9" transform="skewY(-5)"/>
+            <rect x="-18" y="-12" width="36" height="28" fill="#fff" opacity="0.85" transform="skewY(-3)"/>
+            <rect x="-16" y="-18" width="32" height="26" fill="#fff" opacity="0.8" transform="skewY(-1)"/>
+            <rect x="-14" y="-23" width="28" height="24" fill="#fff" opacity="0.6"/>
+          </g>
+        </svg>
+      </div>
+      <h1 class="pf-title" style="margin-bottom:0">Delete Profile</h1>
     </div>
+  </div>
+  <a href="{% url 'printer_profiles' %}" class="pf-btn pf-btn-ghost">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    Cancel
+  </a>
 </div>
+
+<div style="max-width:480px">
+  <div class="pf-card">
+
+    <div class="pf-card-body" style="padding:2rem 1.5rem">
+
+      <!-- Warning icon -->
+      <div style="width:48px;height:48px;border-radius:12px;background:var(--danger-bg);display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </div>
+
+      <h2 style="font-family:var(--ff-head);font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:.5rem">Delete "{{ profile.name }}"?</h2>
+      <p style="font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:1.75rem">
+        This action cannot be undone. Any jobs that reference this profile will revert to the default settings.
+      </p>
+
+      <form method="post" style="display:flex;gap:10px">
+        {% csrf_token %}
+        <a href="{% url 'printer_profiles' %}" class="pf-btn pf-btn-ghost" style="flex:1;justify-content:center">Keep profile</a>
+        <button type="submit" class="pf-btn pf-btn-danger" style="flex:1;justify-content:center;background:var(--danger);color:#fff">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Yes, delete
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 {% endblock %}
