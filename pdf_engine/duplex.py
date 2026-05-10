@@ -1,5 +1,5 @@
 """
-Duplex PDF processing engine for PrintFix Assistant.
+Duplex PDF processing engine for PangaPrint Assistant.
 Handles rearranging pages for duplex printing.
 """
 

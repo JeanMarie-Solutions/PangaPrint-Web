@@ -1,5 +1,5 @@
 """
-Booklet PDF processing engine for PrintFix Assistant.
+Booklet PDF processing engine for PangaPrint Assistant.
 Handles rearranging pages for booklet printing.
 """
 

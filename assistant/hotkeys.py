@@ -1,5 +1,5 @@
 """
-Global hotkey manager for PrintFix Assistant.
+Global hotkey manager for PangaPrint Assistant.
 Handles keyboard shortcuts.
 """
 

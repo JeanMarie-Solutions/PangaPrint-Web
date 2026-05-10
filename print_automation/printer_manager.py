@@ -1,5 +1,5 @@
 """
-Printer management for PrintFix Assistant.
+Printer management for PangaPrint Assistant.
 Handles printer detection and configuration.
 """
 

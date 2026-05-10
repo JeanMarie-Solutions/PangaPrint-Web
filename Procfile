@@ -1,1 +1,1 @@
-web: python manage.py migrate && gunicorn printfix.wsgi:application --bind 0.0.0.0:$PORT
+web: python manage.py migrate && gunicorn pangaprint.wsgi:application --bind 0.0.0.0:$PORT

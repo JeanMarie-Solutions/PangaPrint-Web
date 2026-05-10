@@ -1,5 +1,5 @@
 """
-PDF print launcher for PrintFix Assistant.
+PDF print launcher for PangaPrint Assistant.
 Handles launching PDFs with the print dialog.
 """
 

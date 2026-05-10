@@ -1,5 +1,5 @@
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <!-- Layered geometric squares representing the PrintFix logo -->
+  <!-- Layered geometric squares representing the PangaPrint logo -->
   <defs>
     <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
       <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.2"/>

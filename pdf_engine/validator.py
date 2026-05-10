@@ -1,5 +1,5 @@
 """
-PDF validation engine for PrintFix Assistant.
+PDF validation engine for PangaPrint Assistant.
 Validates PDF files and checks for processing compatibility.
 """
 

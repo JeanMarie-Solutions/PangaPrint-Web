@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: printfix
+    name: pangaprint
     runtime: python3
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
-    startCommand: python manage.py migrate && gunicorn printfix.wsgi:application
+    startCommand: python manage.py migrate && gunicorn pangaprint.wsgi:application
     envVars:
       - key: DEBUG
         value: False
@@ -12,18 +12,18 @@ services:
       - key: ALLOWED_HOSTS
         fromService:
           type: web
-          name: printfix
+          name: pangaprint
           property: host
       - key: DATABASE_URL
         fromDatabase:
-          name: printfix-db
+          name: pangaprint-db
           property: connectionString
 
   - type: pserv
-    name: printfix-db
+    name: pangaprint-db
     runtime: postgresql
     envVarGroups:
       - key: DATABASE_URL
         fromDatabase:
-          name: printfix-db
+          name: pangaprint-db
           property: connectionString

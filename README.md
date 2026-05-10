@@ -1,10 +1,10 @@
-# PrintFix Assistant
+# PangaPrint Assistant
 
 A smart print workflow correction platform that automatically corrects page stacking/order problems in printers.
 
 ## Overview
 
-PrintFix Assistant solves the common issue where printers produce physical pages in reverse stack order. This system automatically detects PDF creation, reorders pages, and launches corrected printing workflows.
+PangaPrint Assistant solves the common issue where printers produce physical pages in reverse stack order. This system automatically detects PDF creation, reorders pages, and launches corrected printing workflows.
 
 ## Features
 
@@ -65,7 +65,7 @@ python assistant/tray_app.py
 1. Configure watch folder in settings
 2. Print any document to PDF (Microsoft Print to PDF)
 3. Save PDF in the watch folder
-4. PrintFix Assistant automatically detects, processes, and launches corrected print
+4. PangaPrint Assistant automatically detects, processes, and launches corrected print
 
 ## Configuration
 
@@ -87,7 +87,7 @@ Edit `.env` file for:
 
 ### Free Deployment Options
 
-PrintFix Assistant can be deployed for free using cloud platforms. Here are the recommended free options:
+PangaPrint Assistant can be deployed for free using cloud platforms. Here are the recommended free options:
 
 #### Option 1: Railway (Recommended)
 
@@ -104,7 +104,7 @@ Railway offers a generous free tier with PostgreSQL database included.
    ALLOWED_HOSTS=your-app.railway.app
    ```
 5. **Build Command**: `pip install -r requirements.txt`
-6. **Start Command**: `python manage.py migrate && gunicorn printfix.wsgi:application --bind 0.0.0.0:$PORT`
+6. **Start Command**: `python manage.py migrate && gunicorn pangaprint.wsgi:application --bind 0.0.0.0:$PORT`
 
 #### Option 2: Render
 
@@ -121,7 +121,7 @@ Render provides free web services with PostgreSQL.
    ALLOWED_HOSTS=your-app.onrender.com
    ```
 5. **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
-6. **Start Command**: `gunicorn printfix.wsgi:application`
+6. **Start Command**: `gunicorn pangaprint.wsgi:application`
 
 #### Option 3: Fly.io
 
@@ -218,9 +218,9 @@ All configurations include automatic database setup and static file serving.
 ## Project Structure
 
 ```
-printfix/
+pangaprint/
 ├── manage.py                 # Django management script
-├── printfix/                 # Django project settings
+├── pangaprint/                 # Django project settings
 ├── dashboard/                # Web dashboard app
 │   ├── models.py            # Database models
 │   ├── views.py             # View logic

@@ -1,5 +1,5 @@
 """
-Configuration loader for PrintFix Assistant.
+Configuration loader for PangaPrint Assistant.
 Loads and manages configuration settings.
 """
 

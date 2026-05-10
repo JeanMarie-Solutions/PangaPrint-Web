@@ -1,5 +1,5 @@
 """
-PDF page reversal engine for PrintFix Assistant.
+PDF page reversal engine for PangaPrint Assistant.
 Handles reversing page order to correct printer stacking issues.
 """
 

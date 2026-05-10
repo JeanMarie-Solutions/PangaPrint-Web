@@ -1,5 +1,5 @@
 """
-Settings manager for PrintFix application.
+Settings manager for PangaPrint application.
 Provides utilities for accessing and managing system settings.
 """
 

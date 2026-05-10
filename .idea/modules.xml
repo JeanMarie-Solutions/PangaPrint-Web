@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/printfix.iml" filepath="$PROJECT_DIR$/.idea/printfix.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pangaprint.iml" filepath="$PROJECT_DIR$/.idea/pangaprint.iml" />
     </modules>
   </component>
 </project>

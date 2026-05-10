@@ -1,5 +1,5 @@
 """
-File watcher for PrintFix Assistant.
+File watcher for PangaPrint Assistant.
 Monitors watch folders for new PDF files.
 """
 

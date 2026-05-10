@@ -1,5 +1,5 @@
 """
-Automatic printing module for PrintFix Assistant.
+Automatic printing module for PangaPrint Assistant.
 Handles automated PDF printing workflows.
 """
 

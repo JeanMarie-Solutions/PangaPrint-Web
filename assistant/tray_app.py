@@ -1,5 +1,5 @@
 """
-System tray application for PrintFix Assistant.
+System tray application for PangaPrint Assistant.
 Provides GUI controls for the background assistant.
 """
 
@@ -16,8 +16,8 @@ from .hotkeys import HotkeyManager
 logger = logging.getLogger(__name__)
 
 
-class PrintFixTrayApp:
-    """System tray application for PrintFix Assistant."""
+class PangaPrintTrayApp:
+    """System tray application for PangaPrint Assistant."""
 
     def __init__(self):
         self.app = QApplication(sys.argv)
@@ -36,7 +36,7 @@ class PrintFixTrayApp:
         """Setup the system tray icon and menu."""
         self.tray_icon = QSystemTrayIcon()
         # For now, use default icon - in production, would load custom icon
-        self.tray_icon.setToolTip("PrintFix Assistant")
+        self.tray_icon.setToolTip("PangaPrint Assistant")
 
         # Create menu
         menu = QMenu()
@@ -92,7 +92,7 @@ class PrintFixTrayApp:
             self.status_action.setText("Status: Running")
             self.toggle_action.setText("Stop Monitoring")
             self.tray_icon.showMessage(
-                "PrintFix Assistant",
+                "PangaPrint Assistant",
                 "PDF monitoring started",
                 QSystemTrayIcon.MessageIcon.Information
             )
@@ -100,7 +100,7 @@ class PrintFixTrayApp:
         except Exception as e:
             logger.error(f"Failed to start monitoring: {str(e)}")
             self.tray_icon.showMessage(
-                "PrintFix Assistant",
+                "PangaPrint Assistant",
                 f"Failed to start monitoring: {str(e)}",
                 QSystemTrayIcon.MessageIcon.Critical
             )
@@ -113,7 +113,7 @@ class PrintFixTrayApp:
             self.status_action.setText("Status: Stopped")
             self.toggle_action.setText("Start Monitoring")
             self.tray_icon.showMessage(
-                "PrintFix Assistant",
+                "PangaPrint Assistant",
                 "PDF monitoring stopped",
                 QSystemTrayIcon.MessageIcon.Information
             )
@@ -135,11 +135,11 @@ class PrintFixTrayApp:
         try:
             response = requests.get("http://localhost:8000/api/status/", timeout=5)
             if response.status_code == 200:
-                self.tray_icon.setToolTip("PrintFix Assistant - Dashboard Online")
+                self.tray_icon.setToolTip("PangaPrint Assistant - Dashboard Online")
             else:
-                self.tray_icon.setToolTip("PrintFix Assistant - Dashboard Offline")
+                self.tray_icon.setToolTip("PangaPrint Assistant - Dashboard Offline")
         except:
-            self.tray_icon.setToolTip("PrintFix Assistant - Dashboard Offline")
+            self.tray_icon.setToolTip("PangaPrint Assistant - Dashboard Offline")
 
     def run(self):
         """Run the tray application."""

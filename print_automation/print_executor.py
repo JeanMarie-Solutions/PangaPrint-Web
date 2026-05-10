@@ -1,5 +1,5 @@
 """
-Print spooler monitor for PrintFix Assistant.
+Print spooler monitor for PangaPrint Assistant.
 Monitors print jobs and their status.
 """
 
