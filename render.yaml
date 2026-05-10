@@ -2,8 +2,8 @@ services:
   - type: web
     name: pangaprint
     runtime: python3
-    buildCommand: pip install -r requirements-server.txt && python manage.py collectstatic --noinput
-    startCommand: python manage.py migrate && gunicorn pangaprint.wsgi:application
+    buildCommand: pip install -r requirements-server.txt && python manage.py migrate && python manage.py collectstatic --noinput
+    startCommand: gunicorn pangaprint.wsgi:application
     envVars:
       - key: DEBUG
         value: False
@@ -14,16 +14,3 @@ services:
           type: web
           name: pangaprint
           property: host
-      - key: DATABASE_URL
-        fromDatabase:
-          name: pangaprint-db
-          property: connectionString
-
-  - type: pserv
-    name: pangaprint-db
-    runtime: postgresql
-    envVarGroups:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: pangaprint-db
-          property: connectionString
