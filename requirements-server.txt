@@ -1,10 +1,6 @@
 Django==6.0.5
 djangorestframework==3.17.1
 pypdf==6.10.2
-watchdog==6.0.0
-# keyboard==0.13.5
-# pywin32==311
-PyQt6==6.11.0
 python-dotenv==1.2.2
 requests==2.31.0
 gunicorn==26.0.0
