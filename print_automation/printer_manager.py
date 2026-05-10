@@ -4,8 +4,15 @@ Handles printer detection and configuration.
 """
 
 import logging
-import win32print
-import win32api
+
+try:
+    import win32print
+    import win32api
+    WIN32_AVAILABLE = True
+except ImportError:
+    win32print = None
+    win32api = None
+    WIN32_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +24,10 @@ def get_available_printers():
     Returns:
         list: List of printer names
     """
+    if not WIN32_AVAILABLE:
+        logger.warning("Printer enumeration is unavailable on this platform.")
+        return []
+
     try:
         printers = []
         for printer in win32print.EnumPrinters(win32print.PRINTER_ENUM_LOCAL | win32print.PRINTER_ENUM_CONNECTIONS):
@@ -34,6 +45,10 @@ def get_default_printer():
     Returns:
         str: Default printer name or None
     """
+    if not WIN32_AVAILABLE:
+        logger.warning("Default printer lookup is unavailable on this platform.")
+        return None
+
     try:
         try:
             from dashboard.settings_manager import SettingsManager
@@ -62,6 +77,10 @@ def set_default_printer(printer_name):
     Returns:
         bool: True if successful
     """
+    if not WIN32_AVAILABLE:
+        logger.warning("Cannot set default printer on this platform.")
+        return False
+
     try:
         win32print.SetDefaultPrinter(printer_name)
         return True
@@ -80,6 +99,9 @@ def is_printer_available(printer_name):
     Returns:
         bool: True if printer is available
     """
+    if not WIN32_AVAILABLE:
+        return False
+
     try:
         handle = win32print.OpenPrinter(printer_name)
         win32print.ClosePrinter(handle)

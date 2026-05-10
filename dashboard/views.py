@@ -103,7 +103,10 @@ def upload_pdf(request):
 
                     if open_after_processing:
                         try:
-                            os.startfile(processed_path)
+                            if hasattr(os, 'startfile'):
+                                os.startfile(processed_path)
+                            else:
+                                logger.warning("Skipping open_after_processing on non-Windows platform.")
                         except Exception as open_ex:
                             logger.warning(f"Failed to open processed PDF {processed_path}: {open_ex}")
 

@@ -6,10 +6,17 @@ Handles launching PDFs with the print dialog.
 import os
 import logging
 import subprocess
-import win32api
-import win32con
 from django.conf import settings
 from print_automation.printer_manager import get_default_printer, is_printer_available
+
+try:
+    import win32api
+    import win32con
+    WIN32_AVAILABLE = True
+except ImportError:
+    win32api = None
+    win32con = None
+    WIN32_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +33,10 @@ def launch_pdf_print(pdf_path, printer_name=None):
         bool: True if successful
     """
     try:
+        if not WIN32_AVAILABLE:
+            logger.error("Windows PDF printing is not available on this platform.")
+            return False
+
         if not os.path.exists(pdf_path):
             raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
@@ -81,6 +92,10 @@ def print_pdf_silently(pdf_path, printer_name=None):
         bool: True if successful
     """
     try:
+        if not WIN32_AVAILABLE:
+            logger.error("Windows PDF printing is not available on this platform.")
+            return False
+
         if not os.path.exists(pdf_path):
             raise FileNotFoundError(f"PDF file not found: {pdf_path}")
 
