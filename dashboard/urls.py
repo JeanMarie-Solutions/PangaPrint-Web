@@ -11,7 +11,6 @@ urlpatterns = [
     path('history/<int:pk>/download/', views.download_processed, name='download_processed'),
     path('history/<int:pk>/print/', views.print_processed, name='print_processed'),
     path('history/<int:pk>/delete/', views.delete_processing_history, name='delete_processing_history'),
-    path('settings/', views.system_settings, name='system_settings'),
     path('about/', views.about, name='about'),
     path('api/profiles/', views.api_profiles, name='api_profiles'),
 

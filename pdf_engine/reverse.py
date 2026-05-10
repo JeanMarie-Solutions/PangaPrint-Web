@@ -11,13 +11,14 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-def reverse_pdf_pages(input_path, profile=None):
+def reverse_pdf_pages(input_path, profile=None, default_reverse=True):
     """
     Reverse the pages of a PDF file.
 
     Args:
         input_path (str): Path to the input PDF file
         profile (PrinterProfile): Printer profile to use for processing
+        default_reverse (bool): Whether to reverse pages when no profile is provided
 
     Returns:
         str: Path to the processed PDF file
@@ -27,17 +28,28 @@ def reverse_pdf_pages(input_path, profile=None):
     """
     try:
         # Determine if reversal is needed
-        should_reverse = True
-        if profile:
-            should_reverse = profile.reverse_pages
+        should_reverse = default_reverse
+        if profile is not None:
+            should_reverse = profile.processing_mode == 'reverse'
 
         # Read the PDF
         reader = PdfReader(input_path)
         page_count = len(reader.pages)
 
+        # Ensure output directory exists
+        os.makedirs(settings.OUTPUT_FOLDER, exist_ok=True)
+        base_name = os.path.basename(input_path)
+        name_without_ext = os.path.splitext(base_name)[0]
+
         if not should_reverse:
-            # If no reversal needed, return original path and page count
-            return input_path, page_count
+            # Copy original PDF to the output directory so processed path remains consistent
+            output_filename = f"{name_without_ext}_processed.pdf"
+            output_path = os.path.join(settings.OUTPUT_FOLDER, output_filename)
+            with open(input_path, 'rb') as source_file:
+                with open(output_path, 'wb') as output_file:
+                    output_file.write(source_file.read())
+            logger.info(f"PDF copied without reversal: {input_path} -> {output_path}")
+            return output_path, page_count
 
         writer = PdfWriter()
 

@@ -22,15 +22,13 @@ class PrinterProfileForm(forms.ModelForm):
     class Meta:
         model = PrinterProfile
         fields = [
-            'name', 'description', 'reverse_pages',
-            'auto_print', 'watch_folder', 'is_default'
+            'name', 'description', 'processing_mode',
+            'is_default'
         ]
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Profile name'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Description'}),
-            'watch_folder': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Leave empty for global watch folder'}),
-            'reverse_pages': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'auto_print': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'processing_mode': forms.Select(attrs={'class': 'form-select'}),
             'is_default': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 

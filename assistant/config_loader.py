@@ -7,8 +7,25 @@ import os
 import json
 import logging
 from django.conf import settings
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
+
+
+def get_system_setting(key, default=None):
+    """Get a system setting from the database with caching."""
+    cache_key = f'system_setting_{key}'
+    value = cache.get(cache_key)
+    if value is None:
+        try:
+            from dashboard.models import SystemSettings
+            setting = SystemSettings.objects.filter(key=key).first()
+            value = setting.value if setting else default
+            cache.set(cache_key, value, 300)  # Cache for 5 minutes
+        except Exception as e:
+            logger.warning(f"Failed to get system setting {key}: {str(e)}")
+            value = default
+    return value
 
 
 class ConfigLoader:
@@ -53,13 +70,26 @@ class ConfigLoader:
             logger.error(f"Failed to save config: {str(e)}")
 
     def get(self, key, default=None):
-        """Get a configuration value."""
-        return self.config.get(key, default)
+        """Get a configuration value, checking system settings first."""
+        # First check system settings (database)
+        system_value = get_system_setting(key)
+        if system_value is not None:
+            return system_value
+
+        # Then check JSON config file
+        file_value = self.config.get(key)
+        if file_value is not None:
+            return file_value
+
+        # Finally return default
+        return default
 
     def set(self, key, value):
         """Set a configuration value."""
         self.config[key] = value
         self.save_config()
+        # Clear cache for this setting
+        cache.delete(f'system_setting_{key}')
 
     def get_watch_folder(self):
         """Get the watch folder path."""

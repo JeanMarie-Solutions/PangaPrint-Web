@@ -1,0 +1,13 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn printfix.wsgi:application --bind 0.0.0.0:$PORT"
+
+[build.env]
+PYTHON_VERSION = "3.11"
+
+[env]
+DEBUG = "False"
+SECRET_KEY = "change-this-in-production"
+ALLOWED_HOSTS = "your-app.railway.app"

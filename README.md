@@ -85,13 +85,126 @@ Edit `.env` file for:
 
 ## Deployment
 
-For production deployment:
+### Free Deployment Options
 
-1. Set DEBUG=False in settings
-2. Configure PostgreSQL database
-3. Use Gunicorn for serving
-4. Enable Whitenoise for static files
-5. Set up proper logging
+PrintFix Assistant can be deployed for free using cloud platforms. Here are the recommended free options:
+
+#### Option 1: Railway (Recommended)
+
+Railway offers a generous free tier with PostgreSQL database included.
+
+1. **Sign up** at [Railway.app](https://railway.app)
+2. **Connect GitHub** and deploy from your repository
+3. **Database**: PostgreSQL is automatically provisioned
+4. **Environment Variables**:
+   ```
+   DEBUG=False
+   SECRET_KEY=your-secret-key-here
+   DATABASE_URL=postgresql://... (auto-provided)
+   ALLOWED_HOSTS=your-app.railway.app
+   ```
+5. **Build Command**: `pip install -r requirements.txt`
+6. **Start Command**: `python manage.py migrate && gunicorn printfix.wsgi:application --bind 0.0.0.0:$PORT`
+
+#### Option 2: Render
+
+Render provides free web services with PostgreSQL.
+
+1. **Sign up** at [Render.com](https://render.com)
+2. **Create Web Service** from your GitHub repo
+3. **Add PostgreSQL** database (free tier available)
+4. **Environment Variables**:
+   ```
+   DEBUG=False
+   SECRET_KEY=your-secret-key-here
+   DATABASE_URL=postgresql://... (from Render dashboard)
+   ALLOWED_HOSTS=your-app.onrender.com
+   ```
+5. **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
+6. **Start Command**: `gunicorn printfix.wsgi:application`
+
+#### Option 3: Fly.io
+
+Fly.io offers free tier with global deployment.
+
+1. **Install Fly CLI** and sign up at [Fly.io](https://fly.io)
+2. **Initialize app**: `fly launch`
+3. **Configure database**: Add PostgreSQL with `fly postgres create`
+4. **Environment Variables** in `fly.toml`:
+   ```toml
+   [env]
+   DEBUG = "False"
+   SECRET_KEY = "your-secret-key-here"
+   ALLOWED_HOSTS = "your-app.fly.dev"
+   ```
+5. **Deploy**: `fly deploy`
+
+#### Option 4: Heroku (Alternative)
+
+Heroku has a free tier (with limitations).
+
+1. **Sign up** at [Heroku.com](https://heroku.com)
+2. **Install Heroku CLI**
+3. **Create app**: `heroku create your-app-name`
+4. **Add PostgreSQL**: `heroku addons:create heroku-postgresql:hobby-dev`
+5. **Environment Variables**:
+   ```
+   heroku config:set DEBUG=False
+   heroku config:set SECRET_KEY=your-secret-key-here
+   heroku config:set ALLOWED_HOSTS=your-app.herokuapp.com
+   ```
+6. **Deploy**: Push to Heroku git remote
+
+### Production Configuration
+
+For any deployment, ensure these settings:
+
+```python
+# settings.py for production
+DEBUG = False
+SECRET_KEY = os.environ.get('SECRET_KEY')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
+
+# Database (PostgreSQL recommended)
+DATABASES = {
+    'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
+}
+
+# Static files
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Security
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+```
+
+### File Storage Considerations
+
+For free tiers, be mindful of storage limits:
+- Uploaded PDFs are stored temporarily
+- Processed files are cleaned up automatically
+- Consider using cloud storage (AWS S3, Cloudinary) for larger deployments
+
+### Deployment Files Included
+
+The repository includes ready-to-use deployment configurations:
+
+- **`railway.toml`**: Railway deployment configuration
+- **`render.yaml`**: Render deployment configuration  
+- **`Procfile`**: Heroku deployment configuration
+- **`.env.example`**: Environment variables template
+
+### Quick Deploy Steps
+
+1. **Railway**: Connect your GitHub repo, Railway auto-deploys
+2. **Render**: Use the render.yaml file for one-click deployment
+3. **Heroku**: Push to Heroku git remote with Procfile
+4. **Fly.io**: Run `fly launch` and follow prompts
+
+All configurations include automatic database setup and static file serving.
 
 ## Testing
 

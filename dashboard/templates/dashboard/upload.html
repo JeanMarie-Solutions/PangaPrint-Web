@@ -216,10 +216,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const dropZone   = document.getElementById('dropZone');
-  const fileInput  = document.getElementById('{{ form.pdf_file.id_for_label }}');
+  const fileInput  = document.getElementById('id_pdf_files') || document.querySelector('input[name="pdf_files"]');
   const form       = document.getElementById('uploadForm');
   const submitBtn  = document.getElementById('submitBtn');
   const dropTitle  = document.getElementById('dropTitle');
+
+  if (!dropZone || !form) {
+    console.warn('Upload page script could not initialize: missing drop zone or form');
+    return;
+  }
   const dropSub    = document.getElementById('dropSub');
   const dropIcon   = document.getElementById('dropIcon');
   const profilesList = document.getElementById('profilesList');
@@ -235,7 +240,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
   ['dragenter','dragover','dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, preventDefaults));
 
-  ['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, () => {
+  ['dragenter','dragover'].forEach(ev => dropZone.addEventListener(ev, (e) => {
+    e.dataTransfer.dropEffect = 'copy';
     dropZone.style.background = 'var(--accent-2)';
     dropZone.style.borderColor = 'var(--accent)';
   }));
@@ -244,25 +250,35 @@ document.addEventListener('DOMContentLoaded', function () {
     dropZone.style.borderColor = '';
   }));
 
+  dropZone.addEventListener('click', function () {
+    if (fileInput) fileInput.click();
+  });
+
   dropZone.addEventListener('drop', function (e) {
-    const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
+    const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
     if (files.length > 0) {
       // Create a new DataTransfer to set multiple files
       const dt = new DataTransfer();
       files.forEach(file => dt.items.add(file));
-      fileInput.files = dt.files;
+      if (fileInput) {
+        fileInput.files = dt.files;
+      }
       showReady(files.length === 1 ? files[0].name : `${files.length} files selected`);
     } else {
       alert('Please drop PDF files only.');
     }
   });
 
-  fileInput.addEventListener('change', function () {
-    if (this.files.length) {
-      const fileNames = Array.from(this.files).map(f => f.name);
-      showReady(this.files.length === 1 ? fileNames[0] : `${this.files.length} files selected`);
-    }
-  });
+  if (fileInput) {
+    fileInput.addEventListener('change', function () {
+      if (this.files.length) {
+        const fileNames = Array.from(this.files).map(f => f.name);
+        showReady(this.files.length === 1 ? fileNames[0] : `${this.files.length} files selected`);
+      }
+    });
+  } else {
+    console.warn('Upload page script could not find the file input element.');
+  }
 
   function showReady(name) {
     dropIcon.style.background = 'var(--success-bg)';

@@ -14,7 +14,7 @@
           <polyline points="12 6 12 12 16 14"/>
         </svg>
       </div>
-      <h1 class="pf-title" style="margin-bottom:0">Processing History</h1>
+      <h1 class="pf-title" style="margin-bottom:0">All Documents</h1>
     </div>
     <p class="pf-subtitle">Complete log of all processed PDF jobs</p>
   </div>
@@ -80,19 +80,18 @@
       <div class="history-card-toolbar">
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
           <button type="button" class="pf-btn pf-btn-ghost pf-btn-sm" onclick="selectAll()">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-            Select All
+            PrintFix Files
           </button>
           <div id="bulkActions" class="pf-action-group" style="display:none;gap:8px;">
-            <button type="submit" name="bulk_action" value="bulk_print" class="pf-btn pf-btn-accent pf-btn-sm">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><rect x="6" y="9" width="12" height="11" rx="2"/><path d="M8 13h8M8 17h4"/></svg>
-              Bulk Print
-            </button>
             <button type="button" class="pf-btn pf-btn-danger pf-btn-sm" onclick="openBulkDeleteModal()">
               <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-              Bulk Delete
+              Delete
             </button>
           </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;margin-top:0.75rem;">
+          <label for="historySearch" style="font-size:13px;color:var(--ink-soft);margin:0;">Search</label>
+          <input id="historySearch" type="search" placeholder="Search by document name" class="pf-input" style="min-width:220px;flex:1;max-width:360px;" oninput="filterHistory()">
         </div>
         <div id="selectionSummary" style="color:var(--ink-soft);font-size:13px;display:none">0 selected</div>
       </div>
@@ -153,6 +152,11 @@
             {% endfor %}
           </tbody>
         </table>
+        <div id="noHistoryResults" class="pf-empty" style="display:none;margin-top:1rem;">
+          <div class="pf-empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <p class="pf-empty-title">No matching documents found</p>
+          <p class="pf-empty-sub">Try another search term or clear the filter.</p>
+        </div>
       </div>
     </div>
     </form>
@@ -207,6 +211,24 @@ function updateBulkSelection() {
       row.classList.toggle('selected', cb.checked);
     }
   });
+}
+
+function filterHistory() {
+  const query = document.getElementById('historySearch').value.trim().toLowerCase();
+  const rows = document.querySelectorAll('.history-table-row');
+  let visibleCount = 0;
+
+  rows.forEach(row => {
+    const filename = row.querySelector('.pf-filename')?.textContent.trim().toLowerCase() || '';
+    const status = row.querySelector('.pf-badge')?.textContent.trim().toLowerCase() || '';
+    const profile = row.querySelector('td:nth-child(5) span')?.textContent.trim().toLowerCase() || '';
+    const matches = !query || filename.includes(query) || status.includes(query) || profile.includes(query);
+
+    row.style.display = matches ? '' : 'none';
+    if (matches) visibleCount += 1;
+  });
+
+  document.getElementById('noHistoryResults').style.display = visibleCount === 0 ? 'block' : 'none';
 }
 
 function openBulkDeleteModal() {

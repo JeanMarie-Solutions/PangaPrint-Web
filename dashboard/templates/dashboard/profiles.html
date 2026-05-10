@@ -47,24 +47,13 @@
             <p style="font-size:13px;color:var(--ink-soft);margin-bottom:1rem;line-height:1.6">{{ profile.description }}</p>
           {% endif %}
 
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:{% if profile.watch_folder %}1rem{% else %}0{% endif %}">
-            {% if profile.reverse_pages %}
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0">
+            {% if profile.processing_mode == 'reverse' %}
               <span class="pf-tag">Reverse pages</span>
-            {% endif %}
-            {% if profile.auto_print %}
-              <span class="pf-tag">Auto print</span>
-            {% endif %}
-            {% if not profile.reverse_pages and not profile.auto_print %}
-              <span class="pf-tag" style="color:var(--ink-ghost)">No special settings</span>
+            {% elif profile.processing_mode == 'normal' %}
+              <span class="pf-tag">Normal order</span>
             {% endif %}
           </div>
-
-          {% if profile.watch_folder %}
-            <div style="background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:var(--radius-sm);padding:8px 10px">
-              <p style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-ghost);margin-bottom:3px">Watch folder</p>
-              <p style="font-size:12px;color:var(--ink-soft);word-break:break-all;font-family:monospace">{{ profile.watch_folder }}</p>
-            </div>
-          {% endif %}
         </div>
 
         <div class="pf-card-footer" style="display:flex;gap:8px">
@@ -144,26 +133,17 @@
             {{ form.description }}
           </div>
 
-          <div class="pf-grid-3" style="margin-bottom:1.25rem">
-            <label class="pf-check-row">
-              {{ form.reverse_pages }}
-              <span>
-                <span class="pf-check-label">Reverse page order</span>
-              </span>
-            </label>
-            <label class="pf-check-row">
-              {{ form.auto_print }}
-              <span>
-                <span class="pf-check-label">Auto launch print</span>
-              </span>
-            </label>
+          <div class="pf-field" style="margin-bottom:1.25rem">
+            <label class="pf-label" for="{{ form.processing_mode.id_for_label }}">Processing mode</label>
+            {{ form.processing_mode }}
+            {% if form.processing_mode.errors %}
+              {% for error in form.processing_mode.errors %}
+                <p class="pf-error">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+            <p class="pf-hint">Choose how to process the PDF pages</p>
           </div>
 
-          <div class="pf-field">
-            <label class="pf-label" for="{{ form.watch_folder.id_for_label }}">Watch folder <span style="color:var(--ink-ghost);font-weight:400">(optional)</span></label>
-            {{ form.watch_folder }}
-            <p class="pf-hint">Leave empty to use the global watch folder</p>
-          </div>
         </div>
         <div class="modal-footer" style="border-top:0.5px solid var(--border);padding:1rem 1.5rem;display:flex;gap:8px;justify-content:flex-end">
           <button type="button" class="pf-btn pf-btn-ghost" data-bs-dismiss="modal">Cancel</button>

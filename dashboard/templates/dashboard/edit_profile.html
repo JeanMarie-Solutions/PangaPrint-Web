@@ -62,25 +62,15 @@
         <div class="pf-divider"></div>
 
         <p class="pf-label" style="margin-bottom:.75rem">Processing options</p>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1.5rem">
-          <label class="pf-check-row">
-            {{ form.reverse_pages }}
-            <span>
-              <span class="pf-check-label">Reverse pages</span>
-            </span>
-          </label>
-          <label class="pf-check-row">
-            {{ form.auto_print }}
-            <span>
-              <span class="pf-check-label">Auto print</span>
-            </span>
-          </label>
-        </div>
-
-        <div class="pf-field" style="margin-bottom:2rem">
-          <label class="pf-label" for="{{ form.watch_folder.id_for_label }}">Watch folder <span style="color:var(--ink-ghost);font-weight:400">(optional)</span></label>
-          {{ form.watch_folder }}
-          <p class="pf-hint">Leave empty to use the global watch folder</p>
+        <div style="margin-bottom:1.5rem">
+          <label class="pf-label" for="{{ form.processing_mode.id_for_label }}">Processing mode</label>
+          {{ form.processing_mode }}
+          {% if form.processing_mode.errors %}
+            {% for error in form.processing_mode.errors %}
+              <p class="pf-error">{{ error }}</p>
+            {% endfor %}
+          {% endif %}
+          <p class="pf-hint">Choose how to process the PDF pages</p>
         </div>
 
         <div style="display:flex;justify-content:flex-end">

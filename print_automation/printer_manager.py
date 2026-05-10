@@ -29,12 +29,23 @@ def get_available_printers():
 
 def get_default_printer():
     """
-    Get the system's default printer.
+    Get the configured default printer or the system default printer.
 
     Returns:
         str: Default printer name or None
     """
     try:
+        try:
+            from dashboard.settings_manager import SettingsManager
+            system_printer = SettingsManager.get('default_printer')
+        except Exception:
+            system_printer = None
+
+        if system_printer:
+            if is_printer_available(system_printer):
+                return system_printer
+            logger.warning(f"Configured default printer unavailable: {system_printer}")
+
         return win32print.GetDefaultPrinter()
     except Exception as e:
         logger.error(f"Failed to get default printer: {str(e)}")

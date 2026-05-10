@@ -4,13 +4,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from .models import PrinterProfile, ProcessingHistory, SystemSettings, PrintJobLog
-from .forms import PDFUploadForm, PrinterProfileForm, SystemSettingsForm
+from .forms import PDFUploadForm, PrinterProfileForm
+from .settings_manager import SettingsManager
 from pdf_engine.reverse import reverse_pdf_pages
 from print_automation.pdf_launcher import launch_pdf_print, print_pdf_silently
 from print_automation.printer_manager import get_default_printer
@@ -57,6 +58,11 @@ def upload_pdf(request):
             processed_count = 0
             failed_count = 0
 
+            max_file_size_mb = SettingsManager.get_int('max_file_size_mb', 500)
+            allowed_formats = [fmt.strip().lstrip('.').lower() for fmt in SettingsManager.get_list('allowed_file_formats', ['pdf']) if fmt]
+            default_page_reversal = SettingsManager.get_bool('default_page_reversal')
+            open_after_processing = SettingsManager.get_bool('open_after_processing')
+
             # Ensure temp folder exists
             os.makedirs(settings.TEMP_FOLDER, exist_ok=True)
 
@@ -64,8 +70,12 @@ def upload_pdf(request):
                 try:
                     # Sanitize filename
                     pdf_filename = os.path.basename(pdf_file.name)
-                    if not pdf_filename.lower().endswith('.pdf'):
-                        raise ValueError("File must be a PDF")
+                    lower_name = pdf_filename.lower()
+                    if not any(lower_name.endswith(f'.{fmt}') for fmt in allowed_formats):
+                        raise ValueError(f"File must be one of: {', '.join(allowed_formats)}")
+
+                    if pdf_file.size > max_file_size_mb * 1024 * 1024:
+                        raise ValueError(f"File exceeds the maximum size of {max_file_size_mb} MB")
 
                     # Save original file temporarily
                     temp_path = os.path.join(settings.TEMP_FOLDER, pdf_filename)
@@ -75,7 +85,11 @@ def upload_pdf(request):
                             destination.write(chunk)
 
                     # Process the PDF
-                    processed_path, page_count = reverse_pdf_pages(temp_path, profile)
+                    processed_path, page_count = reverse_pdf_pages(
+                        temp_path,
+                        profile,
+                        default_reverse=default_page_reversal
+                    )
 
                     # Create processing history record
                     history = ProcessingHistory.objects.create(
@@ -87,9 +101,11 @@ def upload_pdf(request):
                         printer_profile=profile,
                     )
 
-                    # Launch print if profile has auto_print enabled
-                    if profile and profile.auto_print:
-                        launch_pdf_print(processed_path)
+                    if open_after_processing:
+                        try:
+                            os.startfile(processed_path)
+                        except Exception as open_ex:
+                            logger.warning(f"Failed to open processed PDF {processed_path}: {open_ex}")
 
                     processed_count += 1
 
@@ -256,25 +272,6 @@ def delete_processing_history(request, pk):
     job.delete()
     messages.success(request, "Processing history record deleted successfully.")
     return redirect('processing_history')
-
-
-def system_settings(request):
-    """Manage system settings."""
-    settings_list = SystemSettings.objects.all()
-
-    if request.method == 'POST':
-        form = SystemSettingsForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Setting saved successfully.")
-            return redirect('system_settings')
-    else:
-        form = SystemSettingsForm()
-
-    return render(request, 'dashboard/settings.html', {
-        'settings': settings_list,
-        'form': form
-    })
 
 
 def about(request):
